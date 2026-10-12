@@ -12,6 +12,15 @@ interface Props {
 const iconBtn =
   "p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container-high cursor-pointer";
 
+// Example: "13 Oct 2026"
+function formatDate(timestamp: number) {
+  return new Date(timestamp).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function PromptList({ prompts, onEdit, onChanged }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -132,6 +141,10 @@ export default function PromptList({ prompts, onEdit, onChanged }: Props) {
                 <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
               </svg>
             </button>
+
+            <span className="ml-auto text-[10px] text-outline">
+              Updated {formatDate(p.updatedAt)}
+            </span>
           </div>
         </li>
       ))}
