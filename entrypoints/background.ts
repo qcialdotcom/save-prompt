@@ -1,3 +1,7 @@
 export default defineBackground(() => {
-  console.log('Hello background!', { id: browser.runtime.id });
+  browser.runtime.onInstalled.addListener(({ reason }) => {
+    if (reason === "install") {
+      console.log("Save Prompt installed");
+    }
+  });
 });
