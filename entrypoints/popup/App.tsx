@@ -1,8 +1,14 @@
+// entrypoints/popup/App.tsx
+
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+
 export default function App() {
   return (
-    <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolorem ex magni delectus itaque corrupti pariatur,
-      temporibus, doloribus, eum dolores repellendus et atque velit? Exercitationem quae accusantium saepe veniam magni!
+    <div className="w-full h-full flex flex-col">
+      <Navbar />
+      <main className="flex-1 overflow-y-auto"></main>
+      <Footer />
     </div>
   );
 }

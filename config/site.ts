@@ -1,3 +1,5 @@
+// config/site.ts
+
 export const SITE_INFO = {
   name: "Save Prompt",
   tagline: "Manage your AI prompts with ease.",
