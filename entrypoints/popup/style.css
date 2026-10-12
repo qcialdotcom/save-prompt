@@ -180,6 +180,11 @@
   --color-shadow-footer: rgba(0, 0, 0, 0.2);
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline) transparent;
+}
+
 html,
 body {
   margin: 0;
@@ -187,7 +192,6 @@ body {
   width: 400px;
   height: 500px;
   overflow-x: hidden;
-  scrollbar-width: none;
   scroll-behavior: smooth;
   background-color: var(--color-background);
   color: var(--color-on-background);
