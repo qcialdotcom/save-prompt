@@ -79,6 +79,32 @@
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
+
+  /* Animations for create / update / delete */
+  --animate-slide-in: slide-in 0.25s ease-out;
+  --animate-slide-out: slide-out 0.2s ease-in forwards;
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+  }
 }
 
 .dark {
