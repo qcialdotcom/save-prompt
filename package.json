@@ -1,6 +1,6 @@
 {
-  "name": "wxt-react-starter",
-  "description": "manifest.json description",
+  "name": "Save Prompt",
+  "description": "Save, organize, and sync your AI prompts with local storage and cloud sync.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
