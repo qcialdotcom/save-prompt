@@ -10,7 +10,7 @@ export default defineConfig({
     name: "Save Prompt",
     description:
       "Save, organize, and sync your AI prompts with local storage and cloud sync.",
-    permissions: ["storage", "clipboardWrite"],
+    permissions: ["storage", "clipboardWrite", "unlimitedStorage"],
     ...(browser === "firefox" && {
       browser_specific_settings: {
         gecko: {
