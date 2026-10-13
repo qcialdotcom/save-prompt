@@ -1,0 +1,78 @@
+---
+// src/components/roadmap.astro
+import { ROADMAP } from "@/configs/content";
+import { Check, Circle, Clock, Sparkles } from "@lucide/astro";
+
+const STATUS = {
+  Ready: { icon: Check, card: "border-t-tertiary", badge: "bg-tertiary-fixed text-on-tertiary-fixed", item: "text-tertiary" },
+  Next: { icon: Sparkles, card: "border-t-primary", badge: "bg-primary-fixed text-on-primary-fixed", item: "text-primary" },
+  Planned: {
+    icon: Clock,
+    card: "border-t-outline",
+    badge: "bg-surface-container-highest text-on-surface-variant",
+    item: "text-outline",
+  },
+} as const;
+---
+
+<section
+  id="roadmap"
+  aria-labelledby="roadmap-title"
+  class="scroll-mt-16 border-t border-outline-variant/30 bg-surface-container-low py-16 sm:py-24"
+>
+  <div class="mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-wider text-primary">Roadmap</p>
+      <h2 id="roadmap-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        What's ready, what's next
+      </h2>
+      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+        A clear look at where the project is today and where it's heading.
+      </p>
+    </div>
+
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        ROADMAP.map((phase) => {
+          const config = STATUS[phase.status as keyof typeof STATUS] ?? STATUS.Planned;
+          const StatusIcon = config.icon;
+          const isReady = phase.status === "Ready";
+          return (
+            <li
+              class:list={[
+                "group flex min-w-0 flex-col rounded-2xl border border-t-4 border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6",
+                config.card,
+              ]}
+            >
+              <span
+                class:list={[
+                  "inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider",
+                  config.badge,
+                ]}
+              >
+                <StatusIcon class="size-3.5" />
+                {phase.status}
+              </span>
+
+              <h3 class="mt-4 text-xl font-semibold text-on-surface">{phase.title}</h3>
+              <p class="mt-1 text-sm leading-relaxed text-on-surface-variant sm:text-base">{phase.text}</p>
+
+              <ul class="mt-5 flex flex-col gap-2.5 border-t border-outline-variant/60 pt-5">
+                {phase.items.map((item) => (
+                  <li class="flex items-start gap-2.5 text-sm text-on-surface">
+                    {isReady ? (
+                      <Check class:list={["mt-0.5 size-4 shrink-0", config.item]} />
+                    ) : (
+                      <Circle class:list={["mt-1 size-3 shrink-0", config.item]} />
+                    )}
+                    <span class="min-w-0">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</section>
