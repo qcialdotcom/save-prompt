@@ -64,10 +64,24 @@ export const STEPS = [
 ];
 
 export const PRIVACY_POINTS = [
-  "Works fully offline with browser storage - no sign-up needed.",
-  "Cloud sync is opt-in and only used when you sign in to Google Drive or other storage providers.",
-  "You own your data: export everything as JSON at any time.",
+  {
+    icon: "wifi-off",
+    title: "Works fully offline",
+    text: "Prompts are stored in your browser. No sign-up needed, and nothing leaves your device by default.",
+  },
+  {
+    icon: "cloud",
+    title: "Cloud sync is opt-in",
+    text: "Sync only happens when you sign in to Google Drive or another storage provider.",
+  },
+  {
+    icon: "download",
+    title: "You own your data",
+    text: "Export everything as JSON at any time and take it wherever you like.",
+  },
 ];
+
+export const PRIVACY_BADGES = ["No sign-up", "Offline-ready", "Export anytime"];
 
 export const ROADMAP = [
   {

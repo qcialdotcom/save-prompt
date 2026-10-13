@@ -1,0 +1,70 @@
+---
+// src/components/privacy.astro
+import { PRIVACY_BADGES, PRIVACY_POINTS } from "@/configs/content";
+import { SITE_INFO } from "@/configs/site";
+import { Check, Cloud, Download, ShieldCheck, WifiOff } from "@lucide/astro";
+
+const ICONS = { "wifi-off": WifiOff, cloud: Cloud, download: Download } as const;
+---
+
+<section
+  id="privacy"
+  aria-labelledby="privacy-title"
+  class="relative scroll-mt-16 overflow-hidden border-t border-outline-variant/30 bg-surface-container-low py-16 sm:py-24"
+>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-24 -top-24 z-0 size-96 rounded-full bg-primary-fixed/50 blur-3xl dark:bg-primary-container/20"
+  >
+  </div>
+
+  <div class="relative mx-auto grid w-full max-w-300 items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+    <div class="min-w-0 text-center lg:text-left">
+      <span
+        class="inline-flex size-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-[0_8px_24px_var(--color-shadow-primary)]"
+      >
+        <ShieldCheck class="size-7" />
+      </span>
+
+      <p class="mt-6 text-sm font-semibold uppercase tracking-wider text-primary">Privacy</p>
+      <h2 id="privacy-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        Your prompts stay <span class="text-primary">yours</span>
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-pretty text-base text-on-surface-variant sm:text-lg lg:mx-0">
+        {SITE_INFO.name} is built local-first. Your library lives on your device, and you decide if and when it ever goes to the cloud.
+      </p>
+
+      <ul class="mt-8 flex flex-wrap justify-center gap-2 lg:justify-start">
+        {
+          PRIVACY_BADGES.map((badge) => (
+            <li class="inline-flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-sm font-medium text-on-surface">
+              <Check class="size-4 text-tertiary" />
+              {badge}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <ul class="flex min-w-0 flex-col gap-4">
+      {
+        PRIVACY_POINTS.map((point) => {
+          const Icon = ICONS[point.icon as keyof typeof ICONS];
+          return (
+            <li class="group min-w-0 rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] sm:p-6">
+              <div class="flex items-start gap-4">
+                <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                  {Icon && <Icon class="size-5" />}
+                </span>
+                <div class="min-w-0">
+                  <h3 class="text-lg font-semibold text-on-surface">{point.title}</h3>
+                  <p class="mt-1 text-sm leading-relaxed text-on-surface-variant sm:text-base">{point.text}</p>
+                </div>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
