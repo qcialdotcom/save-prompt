@@ -1,5 +1,6 @@
 ---
 // src/components/navbar.astro
+import logo from "@/assets/logo.png";
 import {
   DOWNLOAD_ROUTE,
   FAQ_ROUTE,
@@ -10,9 +11,8 @@ import {
   ROADMAP_ROUTE,
 } from "@/configs/routes";
 import { SITE_INFO } from "@/configs/site";
-import logo from "@/assets/logo.png";
-import { Image } from "astro:assets";
 import { Download, Menu, Moon, Sun, X } from "@lucide/astro";
+import { Image } from "astro:assets";
 
 const LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, PRIVACY_ROUTE, ROADMAP_ROUTE, FAQ_ROUTE];
 ---
@@ -150,7 +150,6 @@ const LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, PRIVACY_ROUTE, ROADMAP_ROUTE,
 </aside>
 
 <style>
-  /* Icon swap driven by the .dark class on <html> */
   .theme-icon-sun {
     display: none;
   }
@@ -166,7 +165,6 @@ const LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, PRIVACY_ROUTE, ROADMAP_ROUTE,
   const header = document.getElementById("site-header");
   const root = document.documentElement;
 
-  // Header shadow on scroll
   const updateHeader = () => {
     const scrolled = window.scrollY > 8;
     header?.classList.toggle("shadow-sm", scrolled);
@@ -175,7 +173,6 @@ const LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, PRIVACY_ROUTE, ROADMAP_ROUTE,
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
 
-  // Theme
   const applyTheme = (isDark: boolean) => {
     root.classList.toggle("dark", isDark);
     try {
@@ -192,7 +189,6 @@ const LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, PRIVACY_ROUTE, ROADMAP_ROUTE,
     btn.addEventListener("click", () => applyTheme(!root.classList.contains("dark")));
   });
 
-  // Mobile menu
   const menuToggle = document.getElementById("menu-toggle");
   const menuClose = document.getElementById("menu-close");
   const mobileMenu = document.getElementById("mobile-menu");

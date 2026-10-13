@@ -1,0 +1,124 @@
+---
+// src/components/footer.astro
+import logo from "@/assets/logo.png";
+import {
+  DOWNLOAD_ROUTE,
+  FAQ_ROUTE,
+  FEATURES_ROUTE,
+  HOME_ROUTE,
+  HOW_IT_WORKS_ROUTE,
+  PRIVACY_ROUTE,
+  ROADMAP_ROUTE,
+} from "@/configs/routes";
+import { SITE_INFO, SOCIAL_LINKS } from "@/configs/site";
+import simpleIcons from "@iconify-json/simple-icons/icons.json";
+import { Mail } from "@lucide/astro";
+import { Image } from "astro:assets";
+
+const PRODUCT_LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, DOWNLOAD_ROUTE, ROADMAP_ROUTE];
+const RESOURCE_LINKS = [FAQ_ROUTE, PRIVACY_ROUTE];
+
+const ICONS = simpleIcons.icons as Record<string, { body: string }>;
+
+const SOCIALS = [
+  { name: "GitHub", url: SOCIAL_LINKS.github, icon: "github" },
+  { name: "LinkedIn", url: SOCIAL_LINKS.linkedin, icon: "linkedin" },
+  { name: "X (Twitter)", url: SOCIAL_LINKS.twitter, icon: "x" },
+  { name: "YouTube", url: SOCIAL_LINKS.youtube, icon: "youtube" },
+].map((social) => ({ ...social, body: ICONS[social.icon]?.body }));
+---
+
+<footer class="border-t border-outline-variant/20 bg-surface-container-lowest text-on-surface">
+  <div class="mx-auto max-w-300 px-4 py-12 sm:px-6">
+    <div class="grid grid-cols-1 gap-10 text-center lg:grid-cols-[2fr_1fr_1fr] lg:text-left">
+      <div class="flex flex-col items-center gap-3 lg:items-start">
+        <a href={HOME_ROUTE.path} class="flex w-fit items-center gap-2 no-underline">
+          <Image src={logo} alt={SITE_INFO.logo.alt} width={32} height={32} densities={[1, 2]} class="h-8 w-8 rounded-lg" />
+          <span class="text-lg font-bold tracking-tight text-on-surface">{SITE_INFO.name}</span>
+        </a>
+        <p class="max-w-sm text-sm leading-relaxed text-on-surface-variant">{SITE_INFO.tagline}</p>
+        <a
+          href={`mailto:${SITE_INFO.email}`}
+          class="flex w-fit items-center gap-2 text-sm text-on-surface-variant no-underline transition-colors hover:text-primary"
+        >
+          <Mail class="h-4 w-4" />
+          {SITE_INFO.email}
+        </a>
+
+        <div class="mt-1 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+          {
+            SOCIALS.map((social) => (
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+                title={social.name}
+                class="inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-surface-container text-on-surface-variant no-underline transition-colors hover:bg-primary hover:text-on-primary"
+              >
+                {social.body ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                    set:html={social.body}
+                  />
+                ) : (
+                  <span class="px-3 text-xs font-medium">{social.name}</span>
+                )}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <nav aria-label="Product" class="flex flex-col items-center gap-2 lg:items-start">
+        <h2 class="mb-1 text-sm font-semibold text-on-surface">Product</h2>
+        {
+          PRODUCT_LINKS.map((route) => (
+            <a href={route.path} class="w-fit text-sm text-on-surface-variant no-underline transition-colors hover:text-primary">
+              {route.name}
+            </a>
+          ))
+        }
+      </nav>
+
+      <nav aria-label="Resources" class="flex flex-col items-center gap-2 lg:items-start">
+        <h2 class="mb-1 text-sm font-semibold text-on-surface">Resources</h2>
+        {
+          RESOURCE_LINKS.map((route) => (
+            <a href={route.path} class="w-fit text-sm text-on-surface-variant no-underline transition-colors hover:text-primary">
+              {route.name}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+
+  <div class="border-t border-outline-variant/20">
+    <div
+      class="mx-auto flex max-w-300 flex-col items-center justify-between gap-2 px-4 py-5 text-center text-xs text-on-surface-variant lg:flex-row lg:px-6 lg:text-left"
+    >
+      <p>Copyright &copy; <span id="footer-year"></span> {SITE_INFO.name}. All rights reserved.</p>
+      <p>
+        Made by
+        <a
+          href={SITE_INFO.parent.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-medium text-on-surface no-underline transition-colors hover:text-primary"
+        >
+          {SITE_INFO.parent.name}
+        </a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const yearEl = document.getElementById("footer-year");
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+</script>
