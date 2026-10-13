@@ -2,14 +2,6 @@
 
 import { SITE_INFO } from "./site";
 
-export const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Privacy", href: "#privacy" },
-  { label: "Roadmap", href: "#roadmap" },
-  { label: "FAQ", href: "#faq" },
-];
-
 export const FEATURES = [
   {
     icon: "bookmark",
