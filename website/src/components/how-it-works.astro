@@ -14,17 +14,22 @@ const ICONS = { pencil: Pencil, search: Search, copy: Copy } as const;
 >
   <div
     aria-hidden="true"
-    class="pointer-events-none absolute -right-24 top-1/3 size-96 rounded-full bg-secondary-fixed/40 blur-3xl dark:bg-secondary-container/15"
+    class="pointer-events-none absolute -right-24 top-1/3 z-0 size-96 rounded-full bg-secondary/10 blur-3xl"
   >
   </div>
 
-  <div class="relative mx-auto w-full max-w-300 px-4 sm:px-6">
-    <div class="mx-auto mb-12 max-w-2xl text-center">
-      <p class="text-sm font-semibold uppercase tracking-wider text-primary">How it works</p>
-      <h2 id="how-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
-        From idea to reusable prompt in seconds
+  <div class="relative z-10 mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center sm:mb-14">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary"
+      >
+        <span aria-hidden="true" class="size-1.5 rounded-full bg-primary"></span>
+        How it works
+      </p>
+      <h2 id="how-title" class="mt-4 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        From idea to reusable prompt <span class="text-primary">in seconds</span>
       </h2>
-      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+      <p class="mx-auto mt-4 max-w-xl text-pretty text-base text-on-surface-variant sm:text-lg">
         Three simple steps. No account, no setup, no friction.
       </p>
     </div>

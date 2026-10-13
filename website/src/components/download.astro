@@ -2,6 +2,7 @@
 // src/components/download.astro
 import { DESKTOP_DOWNLOADS, EXTENSION_DOWNLOADS } from "@/configs/downloads";
 import { SITE_INFO } from "@/configs/site";
+import { Monitor, Puzzle } from "@lucide/astro";
 import DownloadCard from "./download-card.astro";
 ---
 
@@ -16,27 +17,44 @@ import DownloadCard from "./download-card.astro";
   >
   </div>
 
-  <div class="relative mx-auto w-full max-w-300 px-4 sm:px-6">
-    <div class="mx-auto mb-12 max-w-2xl text-center">
-      <p class="text-sm font-semibold uppercase tracking-wider text-primary">Download</p>
-      <h2 id="download-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
-        Get {SITE_INFO.name} on your devices
+  <div class="relative z-10 mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center sm:mb-14">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary"
+      >
+        <span aria-hidden="true" class="size-1.5 rounded-full bg-primary"></span>
+        Download
+      </p>
+      <h2 id="download-title" class="mt-4 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        Get {SITE_INFO.name} on <span class="text-primary">your devices</span>
       </h2>
-      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+      <p class="mx-auto mt-4 max-w-xl text-pretty text-base text-on-surface-variant sm:text-lg">
         Free to use, no account needed. Pick your browser or desktop platform below.
       </p>
     </div>
 
     <div class="flex flex-col gap-12">
       <div>
-        <h3 class="mb-4 text-center text-xl font-bold text-on-surface">Browser extension</h3>
-        <ul class="mx-auto grid max-w-3xl gap-4 md:grid-cols-2">
+        <div class="mb-6 flex items-center gap-3">
+          <span class="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Puzzle class="size-4" />
+          </span>
+          <h3 class="text-lg font-bold text-on-surface">Browser extension</h3>
+          <span aria-hidden="true" class="h-px flex-1 bg-outline-variant/60"></span>
+        </div>
+        <ul class="grid gap-4 md:grid-cols-2">
           {EXTENSION_DOWNLOADS.map((target) => <DownloadCard target={target} />)}
         </ul>
       </div>
 
       <div>
-        <h3 class="mb-4 text-center text-xl font-bold text-on-surface">Desktop app</h3>
+        <div class="mb-6 flex items-center gap-3">
+          <span class="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Monitor class="size-4" />
+          </span>
+          <h3 class="text-lg font-bold text-on-surface">Desktop app</h3>
+          <span aria-hidden="true" class="h-px flex-1 bg-outline-variant/60"></span>
+        </div>
         <ul class="grid gap-4 md:grid-cols-3">
           {DESKTOP_DOWNLOADS.map((target) => <DownloadCard target={target} />)}
         </ul>

@@ -4,11 +4,11 @@ import { ROADMAP } from "@/configs/content";
 import { Check, Circle, Clock, Sparkles } from "@lucide/astro";
 
 const STATUS = {
-  Ready: { icon: Check, card: "border-t-tertiary", badge: "bg-tertiary-fixed text-on-tertiary-fixed", item: "text-tertiary" },
-  Next: { icon: Sparkles, card: "border-t-primary", badge: "bg-primary-fixed text-on-primary-fixed", item: "text-primary" },
+  Ready: { icon: Check, bar: "bg-tertiary", badge: "bg-tertiary-fixed text-on-tertiary-fixed", item: "text-tertiary" },
+  Next: { icon: Sparkles, bar: "bg-primary", badge: "bg-primary-fixed text-on-primary-fixed", item: "text-primary" },
   Planned: {
     icon: Clock,
-    card: "border-t-outline",
+    bar: "bg-outline",
     badge: "bg-surface-container-highest text-on-surface-variant",
     item: "text-outline",
   },
@@ -18,15 +18,26 @@ const STATUS = {
 <section
   id="roadmap"
   aria-labelledby="roadmap-title"
-  class="scroll-mt-16 border-t border-outline-variant/30 bg-surface-container-low py-16 sm:py-24"
+  class="relative scroll-mt-16 overflow-hidden border-t border-outline-variant/30 bg-surface-container-low py-16 sm:py-24"
 >
-  <div class="mx-auto w-full max-w-300 px-4 sm:px-6">
-    <div class="mx-auto mb-12 max-w-2xl text-center">
-      <p class="text-sm font-semibold uppercase tracking-wider text-primary">Roadmap</p>
-      <h2 id="roadmap-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
-        What's ready, what's next
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -bottom-24 -left-24 z-0 size-96 rounded-full bg-secondary/10 blur-3xl"
+  >
+  </div>
+
+  <div class="relative z-10 mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center sm:mb-14">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary"
+      >
+        <span aria-hidden="true" class="size-1.5 rounded-full bg-primary"></span>
+        Roadmap
+      </p>
+      <h2 id="roadmap-title" class="mt-4 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        What's ready, <span class="text-primary">what's next</span>
       </h2>
-      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+      <p class="mx-auto mt-4 max-w-xl text-pretty text-base text-on-surface-variant sm:text-lg">
         A clear look at where the project is today and where it's heading.
       </p>
     </div>
@@ -38,15 +49,12 @@ const STATUS = {
           const StatusIcon = config.icon;
           const isReady = phase.status === "Ready";
           return (
-            <li
-              class:list={[
-                "group flex min-w-0 flex-col rounded-2xl border border-t-4 border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6",
-                config.card,
-              ]}
-            >
+            <li class="group relative flex min-w-0 cursor-default flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6">
+              <span aria-hidden="true" class:list={["absolute inset-x-0 top-0 h-1", config.bar]} />
+
               <span
                 class:list={[
-                  "inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider",
+                  "mt-1 inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider",
                   config.badge,
                 ]}
               >
