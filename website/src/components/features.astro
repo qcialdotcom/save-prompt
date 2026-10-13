@@ -1,0 +1,51 @@
+---
+// src/components/features.astro
+import { FEATURES } from "@/configs/content";
+import { Bookmark, Braces, Clock, Cloud, Copy, Lock, Pencil, Search } from "@lucide/astro";
+
+const ICONS = {
+  bookmark: Bookmark,
+  lock: Lock,
+  search: Search,
+  copy: Copy,
+  clock: Clock,
+  pencil: Pencil,
+  cloud: Cloud,
+  braces: Braces,
+} as const;
+---
+
+<section
+  id="features"
+  aria-labelledby="features-title"
+  class="scroll-mt-16 border-t border-outline-variant/30 bg-surface-container py-16 sm:py-24"
+>
+  <div class="mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-wider text-primary">Features</p>
+      <h2 id="features-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        Everything you need to manage prompts
+      </h2>
+      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+        A simple interface that makes saving, finding and copying prompts quick and effortless.
+      </p>
+    </div>
+
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        FEATURES.map((feature) => {
+          const Icon = ICONS[feature.icon as keyof typeof ICONS];
+          return (
+            <li class="group min-w-0 rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_var(--color-shadow-primary)]">
+              <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                {Icon && <Icon class="h-5 w-5" />}
+              </span>
+              <h3 class="mt-4 text-lg font-semibold text-on-surface">{feature.title}</h3>
+              <p class="mt-1 text-sm leading-relaxed text-on-surface-variant">{feature.text}</p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>

@@ -1,12 +1,14 @@
 ---
 // src/pages/index.astro
 
-import Main from "@/layouts/main.astro";
+import Features from "@/components/features.astro";
 import Hero from "@/components/hero.astro";
+import Main from "@/layouts/main.astro";
 ---
 
 <Main>
   <Fragment slot="content">
     <Hero />
+    <Features />
   </Fragment>
 </Main>
