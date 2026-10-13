@@ -1,0 +1,72 @@
+---
+// src/components/how-it-works.astro
+import { DOWNLOAD_ROUTE } from "@/configs/routes";
+import { STEPS } from "@/configs/content";
+import { ArrowRight, Copy, Pencil, Search } from "@lucide/astro";
+
+const ICONS = { pencil: Pencil, search: Search, copy: Copy } as const;
+---
+
+<section
+  id="how-it-works"
+  aria-labelledby="how-title"
+  class="scroll-mt-16 border-t border-outline-variant/30 bg-surface py-16 sm:py-24"
+>
+  <div class="mx-auto w-full max-w-300 px-4 sm:px-6">
+    <div class="mx-auto mb-12 max-w-2xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-wider text-primary">How it works</p>
+      <h2 id="how-title" class="mt-2 text-balance text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+        From idea to reusable prompt in seconds
+      </h2>
+      <p class="mt-4 text-pretty text-base text-on-surface-variant sm:text-lg">
+        Three simple steps. No account, no setup, no friction.
+      </p>
+    </div>
+
+    <ol class="mx-auto flex max-w-2xl flex-col">
+      {
+        STEPS.map((step, i) => {
+          const Icon = ICONS[step.icon as keyof typeof ICONS];
+          const isLast = i === STEPS.length - 1;
+          return (
+            <li class="relative flex gap-4 pb-8 last:pb-0 sm:gap-6">
+              {!isLast && (
+                <span
+                  aria-hidden="true"
+                  class="absolute bottom-0 left-5 top-10 w-0.5 -translate-x-1/2 rounded-full bg-linear-to-b from-primary/60 to-outline-variant/40"
+                />
+              )}
+
+              <span class="relative z-10 inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-base font-bold text-on-primary shadow-[0_8px_24px_var(--color-shadow-primary)] ring-4 ring-surface">
+                {i + 1}
+              </span>
+
+              <div class="group min-w-0 flex-1 rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] sm:p-6">
+                <div class="flex items-start gap-4">
+                  <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                    {Icon && <Icon class="size-5" />}
+                  </span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-primary">Step {i + 1}</p>
+                    <h3 class="mt-1 text-lg font-semibold text-on-surface sm:text-xl">{step.title}</h3>
+                    <p class="mt-1 text-sm leading-relaxed text-on-surface-variant sm:text-base">{step.text}</p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <div class="mt-12 flex justify-center">
+      <a
+        href={DOWNLOAD_ROUTE.path}
+        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-on-primary no-underline shadow-[0_8px_24px_var(--color-shadow-primary)] transition-opacity hover:opacity-90"
+      >
+        Get started free
+        <ArrowRight class="size-4" />
+      </a>
+    </div>
+  </div>
+</section>

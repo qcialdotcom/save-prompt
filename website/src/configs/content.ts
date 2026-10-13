@@ -47,14 +47,17 @@ export const FEATURES = [
 
 export const STEPS = [
   {
+    icon: "pencil",
     title: "Write or paste",
     text: "Open the popup, add a title and paste the prompt that worked.",
   },
   {
+    icon: "search",
     title: "Find it fast",
     text: "Search or pick from your recent prompts whenever you need them.",
   },
   {
+    icon: "copy",
     title: "Copy and go",
     text: "Copy with one click and paste into your favourite AI tool.",
   },
