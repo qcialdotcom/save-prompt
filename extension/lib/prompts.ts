@@ -131,7 +131,22 @@ export async function importFromJSONFile(
   todo: "replace" | "merge" = "merge",
 ): Promise<void> {
   const text = await file.text();
-  const data: unknown = JSON.parse(text);
+  let data: unknown;
+
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    const location = error instanceof SyntaxError
+      ? error.message.match(/line (\d+) column (\d+)/i)
+      : null;
+    const locationMessage = location
+      ? ` near line ${location[1]}, column ${location[2]}`
+      : "";
+
+    throw new Error(
+      `This file contains invalid JSON${locationMessage}. Check for missing commas, quotes, or brackets or missing required fields and try again. If you are trying to import a file from another app, make sure it is in the correct format.`,
+    );
+  }
 
   // Validate every prompt; reject missing, extra, or invalid fields.
   const result = z.array(PromptSchema).safeParse(data);
