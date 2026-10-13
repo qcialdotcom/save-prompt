@@ -4,10 +4,8 @@
 2. Local storage: Store prompts in the browser without requiring login.
 3. Manage prompts: View, search, edit, copy, and delete saved prompts.
 4. Recent prompts: Keep recently used prompts easily accessible.
-5. Cloud sync: Allow logged-in users to sync prompts across devices.
-6. Free plan: Provide 50 MB of cloud storage with ads.
-7. Premium plan: Provide 1 GB of cloud storage without ads.
-8. Privacy: Keep local prompts on the user's device unless they choose cloud sync.
+5. Cloud sync: Allow logged-in users to sync prompts across devices using google drive later more drives.
+6. Export/Import: Enable users to export prompts as JSON and import them back.
 9. Simple interface: Make saving and copying prompts quick and easy.
 10. Browser support: Build with WXT and React, supporting Chrome and Firefox.
 
@@ -36,8 +34,13 @@ save-prompt/
 ├── components/
 │   ├── PromptForm.tsx
 │   ├── PromptList.tsx
+│   ├── FilterBar.tsx
+│   ├── Navbar.tsx
+│   ├── Footer.tsx
 │   └── SearchBar.tsx
 ├── lib/
+│   ├── auth.ts
+│   ├── sync.ts
 │   └── prompts.ts
 ├── config/
 │   └── site.ts
@@ -53,5 +56,7 @@ save-prompt/
 - `background.ts` for background scripts.
 - `content.ts` for content scripts that run on web pages.
 - `components/` for reusable React components.
+- `lib/auth.ts` for authentication and authorization of google drive.
+- `lib/sync.ts` for syncing prompts with cloud storage.
 - `lib/prompts.ts` for saving, editing, deleting, and searching prompts.
 - `config/site.ts` for site-specific configurations.
