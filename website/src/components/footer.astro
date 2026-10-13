@@ -10,7 +10,7 @@ import {
   PRIVACY_ROUTE,
   ROADMAP_ROUTE,
 } from "@/configs/routes";
-import { SITE_INFO, SOCIAL_LINKS } from "@/configs/site";
+import { SITE_INFO } from "@/configs/site";
 import simpleIcons from "@iconify-json/simple-icons/icons.json";
 import { Mail } from "@lucide/astro";
 import { Image } from "astro:assets";
@@ -21,10 +21,10 @@ const RESOURCE_LINKS = [FAQ_ROUTE, PRIVACY_ROUTE];
 const ICONS = simpleIcons.icons as Record<string, { body: string }>;
 
 const SOCIALS = [
-  { name: "GitHub", url: SOCIAL_LINKS.github, icon: "github" },
-  { name: "LinkedIn", url: SOCIAL_LINKS.linkedin, icon: "linkedin" },
-  { name: "X (Twitter)", url: SOCIAL_LINKS.twitter, icon: "x" },
-  { name: "YouTube", url: SOCIAL_LINKS.youtube, icon: "youtube" },
+  { name: "GitHub", url: SITE_INFO.socials.github, icon: "github" },
+  { name: "LinkedIn", url: SITE_INFO.socials.linkedin, icon: "linkedin" },
+  { name: "X (Twitter)", url: SITE_INFO.socials.twitter, icon: "x" },
+  { name: "YouTube", url: SITE_INFO.socials.youtube, icon: "youtube" },
 ].map((social) => ({ ...social, body: ICONS[social.icon]?.body }));
 ---
 

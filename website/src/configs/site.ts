@@ -17,6 +17,12 @@ export const SITE_INFO = {
   },
   themeColor: { light: "#faf8ff", dark: "#10131f" },
   parent: { name: "Qcial Labs", url: "https://qcial.com" },
+  socials: {
+    github: "https://github.com/qcialdotcom/",
+    linkedin: "https://linkedin.com/company/qcialdotcom/",
+    twitter: "https://twitter.com/qcialdotcom/",
+    youtube: "https://youtube.com/@qcialdotcom",
+  },
   keywords: [
     "AI prompt manager",
     "save prompts",
@@ -36,11 +42,4 @@ export const SITE_INFO = {
     "prompt search",
     "save ChatGPT prompts",
   ],
-};
-
-export const SOCIAL_LINKS = {
-  github: "https://github.com/qcialdotcom/",
-  linkedin: "https://linkedin.com/company/qcialdotcom/",
-  twitter: "https://twitter.com/qcialdotcom/",
-  youtube: "https://youtube.com/@qcialdotcom",
 };

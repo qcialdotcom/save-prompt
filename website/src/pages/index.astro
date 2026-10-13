@@ -9,9 +9,56 @@ import HowItWorks from "@/components/how-it-works.astro";
 import Privacy from "@/components/privacy.astro";
 import Roadmap from "@/components/roadmap.astro";
 import Main from "@/layouts/main.astro";
+import { FAQ as FAQ_ITEMS } from "@/configs/content";
+import { SITE_INFO } from "@/configs/site";
+import { Schema } from "astro-seo-schema";
 ---
 
-<Main>
+<Main
+  title={SITE_INFO.title}
+  description={SITE_INFO.description}
+  keywords={SITE_INFO.keywords}
+>
+  <Fragment slot="head">
+    <Schema
+      item={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE_INFO.name,
+        url: SITE_INFO.url,
+        description: SITE_INFO.description,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${SITE_INFO.url}/?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      }}
+    />
+    <Schema
+      item={{
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: SITE_INFO.name,
+        applicationCategory: "ProductivityApplication",
+        operatingSystem: "Chrome, Firefox, Windows, macOS, Linux",
+        description: SITE_INFO.description,
+        url: SITE_INFO.url,
+        image: new URL(SITE_INFO.logo.src, SITE_INFO.url).toString(),
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      }}
+    />
+    <Schema
+      item={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+          mainEntity: FAQ_ITEMS.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
+      }}
+    />
+  </Fragment>
   <Fragment slot="content">
     <Hero />
     <Features />
