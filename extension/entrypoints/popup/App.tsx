@@ -3,11 +3,12 @@
 import FilterBar from "@/components/FilterBar";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import PromptForm from "@/components/PromptForm";
 import PromptList from "@/components/PromptList";
 import SearchBar from "@/components/SearchBar";
 import { searchPrompts, type Prompt } from "@/lib/prompts";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+
+const PromptForm = lazy(() => import("@/components/PromptForm"));
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -36,10 +37,18 @@ export default function App() {
 
       <main className="flex-1 min-h-0 flex flex-col">
         {editing ? (
-          <PromptForm
-            prompt={editing === "new" ? undefined : editing}
-            onDone={closeForm}
-          />
+          <Suspense
+            fallback={
+              <div className="flex-1 p-4 text-sm text-on-surface-variant">
+                Loading form...
+              </div>
+            }
+          >
+            <PromptForm
+              prompt={editing === "new" ? undefined : editing}
+              onDone={closeForm}
+            />
+          </Suspense>
         ) : (
           <>
             {/* Fixed part: does not scroll */}

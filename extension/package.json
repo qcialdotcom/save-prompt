@@ -2,7 +2,7 @@
   "name": "Save Prompt",
   "description": "Save, organize, and sync your AI prompts with local storage and cloud sync.",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

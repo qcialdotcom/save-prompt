@@ -1,7 +1,5 @@
 // lib/prompts.ts
 
-import Fuse from "fuse.js";
-
 export interface Prompt {
   id: string;
   title: string;
@@ -10,7 +8,6 @@ export interface Prompt {
   isFavorite: boolean;
   createdAt: number;
   updatedAt: number;
-  isCloudSynced: boolean;
 }
 
 const KEY = "prompts";
@@ -29,10 +26,9 @@ export async function getPromptById(id: string): Promise<Prompt | undefined> {
 }
 
 // Add a new prompt, or update it if the id already exists
-// If the prompt is updated or created, set isCloudSynced to false
 // You only pass: id, title, content, tags, isFavorite.
 export async function createOrUpdatePrompt(
-  prompt: Omit<Prompt, "createdAt" | "updatedAt" | "isCloudSynced">,
+  prompt: Omit<Prompt, "createdAt" | "updatedAt">,
 ) {
   const prompts = await getPrompts();
   const existing = prompts.find((p) => p.id === prompt.id);
@@ -43,7 +39,6 @@ export async function createOrUpdatePrompt(
     ...prompt,
     createdAt: existing?.createdAt ?? now, // new: same as updatedAt, existing: keep the old one
     updatedAt: now,
-    isCloudSynced: false,
   };
 
   await browser.storage.local.set({ [KEY]: [...others, updated] });
@@ -88,6 +83,7 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
   // Empty search → return everything
   if (!text) return prompts;
 
+  const { default: Fuse } = await import("fuse.js");
   const fuse = new Fuse(prompts, {
     keys: ["title", "content", "tags"],
     threshold: 0.3, // 0 = exact match, 1 = match anything
