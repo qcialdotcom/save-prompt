@@ -1,0 +1,160 @@
+/* entrypoints/popup/style.css */
+
+@import "tailwindcss";
+
+@theme {
+  /* Primary */
+  --color-primary: #3525cd;
+  --color-primary-container: #4f46e5;
+  --color-primary-fixed: #e2dfff;
+  --color-primary-fixed-dim: #c3c0ff;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #dad7ff;
+  --color-on-primary-fixed: #0f0069;
+  --color-on-primary-fixed-variant: #3323cc;
+  --color-inverse-primary: #c3c0ff;
+  --color-surface-tint: #4d44e3;
+
+  /* Secondary */
+  --color-secondary: #0058be;
+  --color-secondary-container: #2170e4;
+  --color-secondary-fixed: #d8e2ff;
+  --color-secondary-fixed-dim: #adc6ff;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #fefcff;
+  --color-on-secondary-fixed: #001a42;
+  --color-on-secondary-fixed-variant: #004395;
+
+  /* Tertiary */
+  --color-tertiary: #005338;
+  --color-tertiary-container: #006e4b;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #67f4b7;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  /* Surface & Background */
+  --color-background: #faf8ff;
+  --color-surface: #faf8ff;
+  --color-surface-bright: #faf8ff;
+  --color-surface-dim: #d2d9f4;
+  --color-surface-variant: #dae2fd;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #eaedff;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-container-highest: #dae2fd;
+  --color-inverse-surface: #283044;
+  --color-inverse-on-surface: #eef0ff;
+
+  /* Text & Content */
+  --color-on-background: #131b2e;
+  --color-on-surface: #131b2e;
+  --color-on-surface-variant: #464555;
+  --color-outline: #777587;
+  --color-outline-variant: #c7c4d8;
+
+  /* Error */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  /* UI / Window Colors */
+  --color-window-red: #ef4444;
+  --color-window-yellow: #f59e0b;
+  --color-window-green: #10b981;
+
+  /* Shadows */
+  --color-shadow-soft: rgba(0, 0, 0, 0.04);
+  --color-shadow-button: rgba(15, 23, 42, 0.05);
+  --color-shadow-primary: rgba(79, 70, 229, 0.12);
+  --color-shadow-footer: rgba(0, 0, 0, 0.02);
+
+  /* Responsive Breakpoints */
+  --breakpoint-xxs: 360px;
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+}
+
+.dark {
+  /* Primary */
+  --color-primary: #b4b0ff;
+  --color-primary-container: #4f46e5;
+  --color-primary-fixed: #e2dfff;
+  --color-primary-fixed-dim: #c3c0ff;
+  --color-on-primary: #1c1064;
+  --color-on-primary-container: #e5e2ff;
+  --color-on-primary-fixed: #0f0069;
+  --color-on-primary-fixed-variant: #3323cc;
+  --color-inverse-primary: #4d44e3;
+  --color-surface-tint: #c3c0ff;
+
+  /* Secondary */
+  --color-secondary: #a9c7ff;
+  --color-secondary-container: #0058be;
+  --color-secondary-fixed: #d8e2ff;
+  --color-secondary-fixed-dim: #adc6ff;
+  --color-on-secondary: #00285f;
+  --color-on-secondary-container: #e3ecff;
+  --color-on-secondary-fixed: #001a42;
+  --color-on-secondary-fixed-variant: #004395;
+  --color-inverse-secondary: #0058be;
+
+  /* Tertiary */
+  --color-tertiary: #4edea3;
+  --color-tertiary-container: #005338;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary: #003824;
+  --color-on-tertiary-container: #b6ffdc;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  /* Surface & Background */
+  --color-background: #10131f;
+  --color-surface: #10131f;
+  --color-surface-bright: #363a4d;
+  --color-surface-dim: #10131f;
+  --color-surface-variant: #464555;
+  --color-surface-container-lowest: #0a0c16;
+  --color-surface-container-low: #181c2b;
+  --color-surface-container: #1c2032;
+  --color-surface-container-high: #26293c;
+  --color-surface-container-highest: #313447;
+  --color-inverse-surface: #dae2fd;
+  --color-inverse-on-surface: #283044;
+
+  /* Text & Content */
+  --color-on-background: #e2e2f0;
+  --color-on-surface: #e2e2f0;
+  --color-on-surface-variant: #c7c4d8;
+  --color-outline: #918fa1;
+  --color-outline-variant: #464555;
+
+  /* Error */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* UI / Window Colors */
+  --color-window-red: #f87171;
+  --color-window-yellow: #fbbf24;
+  --color-window-green: #34d399;
+
+  /* Shadows */
+  --color-shadow-soft: rgba(0, 0, 0, 0.24);
+  --color-shadow-button: rgba(0, 0, 0, 0.3);
+  --color-shadow-primary: rgba(195, 192, 255, 0.16);
+  --color-shadow-footer: rgba(0, 0, 0, 0.2);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline) transparent;
+}
