@@ -6,7 +6,7 @@ export interface Route {
 }
 
 export const HOME_ROUTE: Route = {
-  path: "/",
+  path: "/#hero",
   name: "Home",
 };
 
