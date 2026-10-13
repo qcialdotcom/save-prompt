@@ -2,29 +2,39 @@
 
 export const SITE_INFO = {
   name: "Save Prompt",
-  tagline: "Manage your AI prompts with ease.",
-  title: "Save Prompt - Save, Organize & Sync Your AI Prompts",
+  tagline: "Your AI prompt manager - save, search & reuse prompts instantly.",
+  title: "Save Prompt - Free AI Prompt Manager for Chrome & Firefox",
   description:
-    "Save Prompt is a free browser extension to save, search, copy and sync your AI prompts. Local-first storage, no login required, JSON export and Google Drive sync.",
+    "Save Prompt is a free browser extension to save, organize, search, and reuse your AI prompts for ChatGPT, Claude, Gemini and more. Local-first, no login required. Works on Chrome and Firefox.",
   url: "https://save-prompt.qcial.com",
   email: "contact@qcial.com",
   logo: { src: "/logo.webp", alt: "Save Prompt logo" },
   ogImage: {
     src: "/logo.png",
-    alt: "Save Prompt - manage your AI prompts with ease",
+    alt: "Save Prompt - Free AI Prompt Manager for Chrome & Firefox",
+    width: 1200,
+    height: 630,
   },
   themeColor: { light: "#faf8ff", dark: "#10131f" },
   parent: { name: "Qcial Labs", url: "https://qcial.com" },
   keywords: [
-    "save prompt",
     "AI prompt manager",
-    "prompt library",
-    "ChatGPT prompts",
+    "save prompts",
+    "prompt organizer",
+    "ChatGPT prompt saver",
     "Claude prompts",
-    "prompt organizer browser extension",
-    "Chrome extension",
-    "Firefox add-on",
-    "prompt clipboard manager",
+    "Gemini prompts",
+    "browser extension prompts",
+    "Chrome extension AI prompts",
+    "Firefox add-on prompts",
+    "prompt library",
+    "prompt clipboard",
+    "reuse AI prompts",
+    "local-first prompt manager",
+    "free prompt manager",
+    "AI productivity tool",
+    "prompt search",
+    "save ChatGPT prompts",
   ],
 };
 
@@ -34,9 +44,9 @@ export const EXTENSION_DOWNLOAD_LINKS = {
 };
 
 export const DESKTOP_APP_DOWNLOAD_LINKS = {
-  windows: { command: "comming soon", executable: "comming soon" },
-  mac: { command: "comming soon", executable: "comming soon" },
-  linux: { command: "comming soon", executable: "comming soon" },
+  windows: { command: "coming soon", executable: "coming soon" },
+  mac: { command: "coming soon", executable: "coming soon" },
+  linux: { command: "coming soon", executable: "coming soon" },
 };
 
 export const SOCIAL_LINKS = {
