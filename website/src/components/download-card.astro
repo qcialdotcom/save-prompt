@@ -1,0 +1,135 @@
+---
+// src/components/download-card.astro
+
+import type { DownloadTarget } from "@/configs/downloads";
+import { ArrowUpRight, Check, Clock, Copy, Download, Flame, Globe, Laptop, Monitor, Terminal } from "@lucide/astro";
+
+interface Props {
+  target: DownloadTarget;
+}
+
+const { target } = Astro.props;
+
+const ICONS = { globe: Globe, flame: Flame, monitor: Monitor, laptop: Laptop, terminal: Terminal } as const;
+
+const Icon = ICONS[target.icon];
+
+const hasLink = target.href !== null;
+const hasCommand = target.command !== null;
+const comingSoon = !hasLink && !hasCommand;
+---
+
+<li
+  class:list={[
+    "group flex h-full min-w-0 flex-col rounded-2xl border bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)] transition-all duration-200 sm:p-6",
+    comingSoon
+      ? "cursor-default border-outline-variant/60"
+      : "border-outline-variant hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_var(--color-shadow-primary)] motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+  ]}
+>
+  <div class="flex items-start gap-4">
+    <span
+      class:list={[
+        "inline-flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors duration-200",
+        comingSoon
+          ? "bg-surface-container-high text-on-surface-variant"
+          : "bg-primary-fixed text-on-primary-fixed group-hover:bg-primary group-hover:text-on-primary",
+      ]}
+    >
+      <Icon class="size-5" />
+    </span>
+    <div class="min-w-0">
+      <h4 class="text-lg font-semibold text-on-surface">{target.name}</h4>
+      <p class="mt-0.5 text-sm text-on-surface-variant">{target.description}</p>
+    </div>
+  </div>
+
+  <div class="mt-auto flex flex-col gap-4 pt-6">
+    {
+      comingSoon && (
+        <span
+          role="status"
+          aria-label={`${target.name} download is coming soon`}
+          title="Not available yet"
+          class="inline-flex min-h-12 w-full cursor-not-allowed select-none items-center justify-center gap-2 rounded-full border border-dashed border-outline-variant bg-surface-container-low px-6 text-sm font-semibold uppercase tracking-wider text-on-surface-variant"
+        >
+          <Clock class="size-4" />
+          Coming soon
+        </span>
+      )
+    }
+
+    {
+      hasLink && (
+        <a
+          href={target.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${target.buttonLabel} (opens in a new tab)`}
+          class="group/btn inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-on-primary no-underline shadow-[0_8px_24px_var(--color-shadow-primary)] transition-all duration-200 hover:opacity-90 hover:shadow-[0_12px_32px_var(--color-shadow-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100"
+        >
+          <Download class="size-5" />
+          {target.buttonLabel}
+          <ArrowUpRight class="size-4 opacity-70 transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 motion-reduce:transition-none" />
+        </a>
+      )
+    }
+
+    {
+      hasCommand && (
+        <div class="rounded-xl border border-outline-variant bg-surface-container-low p-3">
+          <div class="flex items-center justify-between gap-2">
+            <p class="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant">
+              <Terminal class="size-3.5" />
+              {target.commandLabel}
+            </p>
+            <button
+              type="button"
+              data-copy={target.command}
+              aria-live="polite"
+              aria-label={`Copy ${target.commandLabel.toLowerCase()}`}
+              class="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-on-surface-variant transition-colors hover:bg-surface-container-highest hover:text-on-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+            >
+              <span data-copy-idle class="inline-flex items-center gap-1">
+                <Copy class="size-3.5" />
+                Copy
+              </span>
+              <span data-copy-done class="hidden items-center gap-1 text-tertiary">
+                <Check class="size-3.5" />
+                Copied
+              </span>
+            </button>
+          </div>
+          <code class="mt-2 block cursor-text select-all overflow-x-auto whitespace-nowrap rounded-lg bg-inverse-surface px-3 py-2 font-mono text-sm text-inverse-on-surface">
+            {target.command}
+          </code>
+        </div>
+      )
+    }
+  </div>
+</li>
+
+<script>
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-copy]");
+    if (!button) return;
+
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy ?? "");
+    } catch {
+      return;
+    }
+
+    const idle = button.querySelector("[data-copy-idle]");
+    const done = button.querySelector("[data-copy-done]");
+    idle?.classList.add("hidden");
+    done?.classList.remove("hidden");
+    done?.classList.add("inline-flex");
+
+    window.setTimeout(() => {
+      done?.classList.add("hidden");
+      done?.classList.remove("inline-flex");
+      idle?.classList.remove("hidden");
+    }, 2000);
+  });
+</script>

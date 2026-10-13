@@ -38,17 +38,6 @@ export const SITE_INFO = {
   ],
 };
 
-export const EXTENSION_DOWNLOAD_LINKS = {
-  chrome: "https://chrome.google.com/webstore/comming-soon",
-  firefox: "https://addons.mozilla.org/en-US/firefox/comming-soon",
-};
-
-export const DESKTOP_APP_DOWNLOAD_LINKS = {
-  windows: { command: "coming soon", executable: "coming soon" },
-  mac: { command: "coming soon", executable: "coming soon" },
-  linux: { command: "coming soon", executable: "coming soon" },
-};
-
 export const SOCIAL_LINKS = {
   github: "https://github.com/qcialdotcom/",
   linkedin: "https://linkedin.com/company/qcialdotcom/",
