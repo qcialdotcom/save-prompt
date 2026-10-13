@@ -1,4 +1,4 @@
-// configs/routes.ts
+// src/configs/routes.ts
 
 export interface Route {
   path: string;

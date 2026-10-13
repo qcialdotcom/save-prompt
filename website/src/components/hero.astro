@@ -1,0 +1,132 @@
+---
+// src/components/hero.astro
+import logo from "@/assets/logo.png";
+import { DOWNLOAD_ROUTE, FEATURES_ROUTE } from "@/configs/routes";
+import { SITE_INFO } from "@/configs/site";
+import { ArrowRight, ArrowUpDown, Download, Moon, Pencil, Plus, Shield, Star, Trash2 } from "@lucide/astro";
+import { Image } from "astro:assets";
+
+const PROMPTS = [
+  {
+    title: "Code review",
+    text: "Review the code below like a senior engineer. List bugs, edge cases, and performance or security issues, then suggest a fix for each. Code:",
+    tags: ["coding", "review"],
+    favorite: true,
+  },
+  {
+    title: "Explain this error",
+    text: "Explain this error in simple terms, find the likely root cause, and give the smallest fix with a short code example. Error and code:",
+    tags: ["debugging", "errors"],
+    favorite: false,
+  },
+];
+---
+
+<section aria-labelledby="hero-title" class="relative flex items-center overflow-hidden lg:min-h-[calc(100dvh-4rem)]">
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-128 bg-linear-to-b from-primary-fixed/60 to-transparent dark:from-primary-container/20"
+  >
+  </div>
+
+  <div class="mx-auto grid w-full max-w-300 items-center gap-12 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
+    <div class="min-w-0 text-center lg:text-left">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-low px-3 py-1 text-xs font-medium text-on-surface-variant sm:text-sm"
+      >
+        <Shield class="h-4 w-4 text-primary" />
+        Free · Local-first · No login
+      </p>
+
+      <h1
+        id="hero-title"
+        class="mt-5 text-balance text-3xl font-extrabold leading-tight tracking-tight text-on-surface xxs:text-4xl sm:text-5xl lg:text-6xl"
+      >
+        Save, search &amp; reuse your <span class="text-primary">AI prompts</span> instantly
+      </h1>
+
+      <p class="mx-auto mt-5 max-w-xl text-pretty text-base text-on-surface-variant sm:text-lg lg:mx-0">
+        {SITE_INFO.name} is a free browser extension for ChatGPT, Claude, Gemini and more. Keep every prompt in one place, copy it in
+        a click, and never rewrite the same prompt again.
+      </p>
+
+      <div class="mt-8 flex flex-col items-stretch gap-3 xs:flex-row xs:justify-center lg:justify-start">
+        <a
+          href={DOWNLOAD_ROUTE.path}
+          class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-on-primary no-underline shadow-[0_8px_24px_var(--color-shadow-primary)] transition-opacity hover:opacity-90"
+        >
+          <Download class="h-5 w-5" />
+          Add to browser
+        </a>
+        <a
+          href={FEATURES_ROUTE.path}
+          class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-outline px-6 font-semibold text-on-surface no-underline transition-colors hover:bg-surface-container"
+        >
+          See features
+          <ArrowRight class="h-4 w-4" />
+        </a>
+      </div>
+
+      <p class="mt-4 text-sm text-on-surface-variant">Works on Chrome &amp; Firefox</p>
+    </div>
+
+    <div class="min-w-0" aria-hidden="true">
+      <div
+        class="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-outline-variant bg-surface shadow-[0_24px_60px_var(--color-shadow-primary)]"
+      >
+        <div class="flex items-center justify-between border-b border-outline-variant px-4 py-3">
+          <div class="flex items-center gap-2">
+            <Image src={logo} alt="" width={28} height={28} densities={[1, 2]} class="h-7 w-7 rounded-lg" />
+            <span class="text-sm font-bold text-on-surface">{SITE_INFO.name}</span>
+          </div>
+          <Moon class="h-5 w-5 text-on-surface-variant" />
+        </div>
+
+        <div class="flex flex-col gap-3 p-4">
+          <div class="flex gap-2">
+            <div
+              class="min-w-0 flex-1 truncate rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface-variant"
+            >
+              Search prompts...
+            </div>
+            <div class="inline-flex items-center gap-1 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-on-primary">
+              <Plus class="h-4 w-4" />
+              Add new
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full border border-outline-variant px-3 py-1 text-xs font-medium text-on-surface"
+            >
+              <Star class="h-3.5 w-3.5" />
+              Favorites
+            </span>
+            <ArrowUpDown class="h-4 w-4 text-on-surface-variant" />
+          </div>
+
+          {
+            PROMPTS.map((prompt) => (
+              <div class="rounded-xl border border-outline-variant bg-surface-container-low p-3.5">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-sm font-semibold text-on-surface">{prompt.title}</h3>
+                  {prompt.favorite && <Star class="h-4 w-4 shrink-0 fill-window-yellow text-window-yellow" />}
+                </div>
+                <p class="mt-1.5 text-xs leading-relaxed text-on-surface-variant">{prompt.text}</p>
+                <div class="mt-2.5 flex flex-wrap gap-1.5">
+                  {prompt.tags.map((tag) => (
+                    <span class="rounded-full bg-primary-fixed px-2.5 py-0.5 text-[11px] text-on-primary-fixed">{tag}</span>
+                  ))}
+                </div>
+                <div class="mt-3 flex items-center gap-3">
+                  <span class="rounded-lg bg-primary-container px-3 py-1 text-xs font-medium text-on-primary">Copy</span>
+                  <Pencil class="h-4 w-4 text-on-surface-variant" />
+                  <Trash2 class="h-4 w-4 text-on-surface-variant" />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
