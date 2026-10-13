@@ -61,7 +61,7 @@ export default function App() {
               <FilterBar
                 onlyFavorites={onlyFavorites}
                 onToggleFavorites={() => setOnlyFavorites(!onlyFavorites)}
-                onDeletedAll={load}
+                onChanged={load}
               />
             </div>
 

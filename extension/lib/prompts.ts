@@ -1,4 +1,4 @@
-// lib/prompts.ts
+import { z } from "zod";
 
 export interface Prompt {
   id: string;
@@ -11,6 +11,18 @@ export interface Prompt {
 }
 
 const KEY = "prompts";
+
+const PromptSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    content: z.string(),
+    tags: z.array(z.string()),
+    isFavorite: z.boolean(),
+    createdAt: z.number().finite(),
+    updatedAt: z.number().finite(),
+  })
+  .strict();
 
 // Get all prompts (newest first)
 export async function getPrompts(): Promise<Prompt[]> {
@@ -29,7 +41,7 @@ export async function getPromptById(id: string): Promise<Prompt | undefined> {
 // You only pass: id, title, content, tags, isFavorite.
 export async function createOrUpdatePrompt(
   prompt: Omit<Prompt, "createdAt" | "updatedAt">,
-) {
+): Promise<void> {
   const prompts = await getPrompts();
   const existing = prompts.find((p) => p.id === prompt.id);
   const others = prompts.filter((p) => p.id !== prompt.id);
@@ -45,7 +57,7 @@ export async function createOrUpdatePrompt(
 }
 
 // Delete a prompt
-export async function deletePrompt(id: string) {
+export async function deletePrompt(id: string): Promise<void> {
   const prompts = await getPrompts();
   await browser.storage.local.set({
     [KEY]: prompts.filter((p) => p.id !== id),
@@ -53,12 +65,12 @@ export async function deletePrompt(id: string) {
 }
 
 // Delete all prompts
-export async function deleteAllPrompts() {
+export async function deleteAllPrompts(): Promise<void> {
   await browser.storage.local.set({ [KEY]: [] });
 }
 
 // Toggle favorite status of a prompt
-export async function toggleFavorite(id: string) {
+export async function toggleFavorite(id: string): Promise<void> {
   const prompts = await getPrompts();
   const prompt = prompts.find((p) => p.id === id);
   if (prompt) {
@@ -80,7 +92,7 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
   const prompts = await getPrompts();
   const text = query.trim();
 
-  // Empty search → return everything
+  // Empty search -> return everything
   if (!text) return prompts;
 
   const { default: Fuse } = await import("fuse.js");
@@ -94,4 +106,81 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
     .search(text)
     .map((result) => result.item)
     .sort((a, b) => b.createdAt - a.createdAt);
+}
+
+// Export prompts to JSON file
+export async function exportToJSONFile(): Promise<void> {
+  const prompts = await getPrompts();
+  const json = JSON.stringify(prompts, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "prompts.json";
+    a.click();
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+// Import prompts from JSON file
+export async function importFromJSONFile(
+  file: File,
+  todo: "replace" | "merge" = "merge",
+): Promise<void> {
+  const text = await file.text();
+  const data: unknown = JSON.parse(text);
+
+  // Validate every prompt; reject missing, extra, or invalid fields.
+  const result = z.array(PromptSchema).safeParse(data);
+
+  if (!result.success) {
+    throw new Error(
+      "Invalid JSON: every prompt must contain exactly the required fields with valid values.",
+    );
+  }
+
+  const importedPrompts: Prompt[] = result.data;
+
+  // Reject duplicate IDs in the imported file.
+  const ids = new Set<string>();
+
+  for (const prompt of importedPrompts) {
+    if (ids.has(prompt.id)) {
+      throw new Error(`Invalid JSON: duplicate prompt ID "${prompt.id}".`);
+    }
+
+    ids.add(prompt.id);
+  }
+
+  if (todo === "replace") {
+    await browser.storage.local.set({
+      [KEY]: importedPrompts,
+    });
+    return;
+  }
+
+  // Merge by ID; imported prompts update existing prompts.
+  const existingPrompts = await getPrompts();
+  const promptMap = new Map<string, Prompt>(
+    existingPrompts.map((prompt) => [prompt.id, prompt]),
+  );
+
+  for (const prompt of importedPrompts) {
+    const existing = promptMap.get(prompt.id);
+
+    promptMap.set(prompt.id, {
+      ...prompt,
+      createdAt: existing?.createdAt ?? prompt.createdAt,
+      updatedAt: existing
+        ? Math.max(existing.updatedAt, prompt.updatedAt)
+        : prompt.updatedAt,
+    });
+  }
+
+  await browser.storage.local.set({
+    [KEY]: [...promptMap.values()].sort((a, b) => b.createdAt - a.createdAt),
+  });
 }
