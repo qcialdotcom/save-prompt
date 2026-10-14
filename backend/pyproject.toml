@@ -5,7 +5,10 @@ description = "Save Prompt is a free browser extension to save, organize, search
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "cryptography>=50.0.2",
     "fastapi[standard]>=0.143.0",
+    "google-auth>=2.62.0",
+    "pyjwt[crypto]>=2.15.1",
     "python-dotenv>=1.2.4",
     "sqlmodel>=0.0.48",
     "upstash-ratelimit>=1.2.0",
