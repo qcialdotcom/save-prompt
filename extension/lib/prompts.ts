@@ -136,9 +136,10 @@ export async function importFromJSONFile(
   try {
     data = JSON.parse(text);
   } catch (error) {
-    const location = error instanceof SyntaxError
-      ? error.message.match(/line (\d+) column (\d+)/i)
-      : null;
+    const location =
+      error instanceof SyntaxError
+        ? error.message.match(/line (\d+) column (\d+)/i)
+        : null;
     const locationMessage = location
       ? ` near line ${location[1]}, column ${location[2]}`
       : "";
@@ -193,6 +194,27 @@ export async function importFromJSONFile(
         ? Math.max(existing.updatedAt, prompt.updatedAt)
         : prompt.updatedAt,
     });
+  }
+
+  await browser.storage.local.set({
+    [KEY]: [...promptMap.values()].sort((a, b) => b.createdAt - a.createdAt),
+  });
+}
+
+// Merge prompts: new prompts replace existing prompts with the same ID.
+export async function mergePrompts(prompts: Prompt[]): Promise<void> {
+  const existingPrompts = await getPrompts();
+
+  const promptMap: Map<string, Prompt> = new Map<string, Prompt>(
+    existingPrompts.map((prompt) => [prompt.id, prompt]),
+  );
+
+  for (const prompt of prompts) {
+    const existing = promptMap.get(prompt.id);
+
+    if (!existing || prompt.updatedAt > existing.updatedAt) {
+      promptMap.set(prompt.id, prompt);
+    }
   }
 
   await browser.storage.local.set({
