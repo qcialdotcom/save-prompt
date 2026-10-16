@@ -1,7 +1,7 @@
 // lib/sync.ts
 // Sync prompts with Google Drive: download -> merge -> upload.
 
-import { getAccessToken } from "@/lib/auth";
+import { getAccessToken, isLoggedIn } from "@/lib/auth";
 import { getPrompts, mergePrompts, type Prompt } from "@/lib/prompts";
 
 // Settings used to control cloud sync.
@@ -31,18 +31,25 @@ const defaultSettings: SyncSettings = {
 // ================================
 
 // Get saved settings, using defaults for missing values.
+// Sync is always off when the user has no saved Google login.
 export async function getSyncSettings(): Promise<SyncSettings> {
   const data = await browser.storage.local.get(SETTINGS_KEY);
-  return {
+  const settings: SyncSettings = {
     ...defaultSettings,
     ...(data[SETTINGS_KEY] as Partial<SyncSettings>),
   };
+  if (!(await isLoggedIn())) settings.isEnabled = false;
+  return settings;
 }
 
 // Save changed settings while keeping the existing values.
+// Refuse to turn on sync when there is no saved Google login.
 export async function saveSyncSettings(
   changes: Partial<SyncSettings>,
 ): Promise<SyncSettings> {
+  if (changes.isEnabled && !(await isLoggedIn())) {
+    changes = { ...changes, isEnabled: false };
+  }
   const settings = { ...(await getSyncSettings()), ...changes };
   await browser.storage.local.set({ [SETTINGS_KEY]: settings });
   return settings;

@@ -1,6 +1,6 @@
 // components/SyncButton.tsx
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isLoggedIn, logout } from "@/lib/auth";
 import {
   getSyncSettings,
@@ -17,14 +17,24 @@ interface Props {
 export default function SyncButton({ onChanged }: Props) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<SyncSettings | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
+  // null = not checked yet, so the icon doesn't animate before we know
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   async function refresh() {
-    setSettings(await getSyncSettings());
-    setLoggedIn(await isLoggedIn());
+    const [nextSettings, nextLoggedIn] = await Promise.all([
+      getSyncSettings(),
+      isLoggedIn(),
+    ]);
+    setSettings(nextSettings);
+    setLoggedIn(nextLoggedIn);
   }
+
+  // Check login on load so the icon is correct before the modal opens
+  useEffect(() => {
+    refresh();
+  }, []);
 
   function openModal() {
     setOpen(true);
@@ -64,24 +74,50 @@ export default function SyncButton({ onChanged }: Props) {
     await refresh();
   }
 
+  const showLoginHint = loggedIn === false;
+
   return (
     <>
       <button
         onClick={openModal}
-        aria-label="Cloud sync"
+        aria-label={showLoginHint ? "Sign in to cloud sync" : "Cloud sync"}
         className="p-1.5 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
       >
-        <svg
-          className="size-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5" />
-        </svg>
+        <span className="relative block size-4">
+          {/* Sync icon */}
+          <svg
+            className={`absolute inset-0 size-4 ${
+              showLoginHint
+                ? "animate-icon-swap motion-reduce:animate-none"
+                : ""
+            }`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5" />
+          </svg>
+
+          {/* Login icon: only when signed out, half a cycle behind the sync icon */}
+          {showLoginHint && (
+            <svg
+              className="absolute inset-0 size-4 animate-icon-swap [animation-delay:-1.5s] motion-reduce:hidden"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+          )}
+        </span>
       </button>
 
       {open && settings && (

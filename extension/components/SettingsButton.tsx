@@ -2,6 +2,7 @@
 // Settings modal. Right now it only has the sync settings.
 
 import { useState } from "react";
+import { isLoggedIn } from "@/lib/auth";
 import {
   getSyncSettings,
   saveSyncSettings,
@@ -16,19 +17,87 @@ const INTERVALS = [
   { secs: 3600, label: "Every hour" },
 ];
 
+type ErrorTarget = "sync" | "background";
+
+function Toggle({
+  checked,
+  blocked = false,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  blocked?: boolean;
+  label: string;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      aria-disabled={blocked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
+        checked ? "bg-primary" : "bg-outline-variant"
+      } ${blocked ? "opacity-40" : ""}`}
+    >
+      <span
+        className={`inline-block size-4 rounded-full bg-on-primary shadow transition-transform ${
+          checked ? "translate-x-4.5" : "translate-x-0.5"
+        }`}
+      />
+    </button>
+  );
+}
+
 export default function SettingsButton() {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<SyncSettings | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+  const [error, setError] = useState<{
+    target: ErrorTarget;
+    message: string;
+  } | null>(null);
 
   async function openModal() {
+    setSignedIn(await isLoggedIn());
     setSettings(await getSyncSettings());
+    setError(null);
     setOpen(true);
+  }
+
+  function closeModal() {
+    setError(null);
+    setOpen(false);
   }
 
   // Save a change, then restart the background timer
   async function change(changes: Partial<SyncSettings>) {
+    setError(null);
     setSettings(await saveSyncSettings(changes));
     await scheduleSync();
+  }
+
+  // Cloud sync needs a saved Google login.
+  async function toggleSync(value: boolean) {
+    if (value && !signedIn) {
+      setError({ target: "sync", message: "Please log in first." });
+      return;
+    }
+    await change({ isEnabled: value });
+  }
+
+  // Run in background needs Cloud sync to be on.
+  async function toggleBackground(value: boolean) {
+    if (!settings?.isEnabled) {
+      setError({
+        target: "background",
+        message: "Please turn on Cloud sync first.",
+      });
+      return;
+    }
+    await change({ runInBackground: value });
   }
 
   return (
@@ -54,7 +123,7 @@ export default function SettingsButton() {
 
       {open && settings && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={closeModal}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60"
         >
           <div
@@ -66,26 +135,35 @@ export default function SettingsButton() {
               Sync
             </p>
 
-            <label className="flex items-center justify-between mt-2 text-sm text-on-surface cursor-pointer">
+            <div className="flex items-center justify-between mt-2 text-sm text-on-surface">
               Cloud sync
-              <input
-                type="checkbox"
+              <Toggle
+                label="Cloud sync"
                 checked={settings.isEnabled}
-                onChange={(e) => change({ isEnabled: e.target.checked })}
-                className="size-4 accent-primary cursor-pointer"
+                blocked={!signedIn}
+                onChange={toggleSync}
               />
-            </label>
+            </div>
+            {error?.target === "sync" && (
+              <p role="alert" className="mt-1 text-xs text-error">
+                {error.message}
+              </p>
+            )}
 
-            <label className="flex items-center justify-between mt-2 text-sm text-on-surface cursor-pointer">
+            <div className="flex items-center justify-between mt-2 text-sm text-on-surface">
               Run in background
-              <input
-                type="checkbox"
+              <Toggle
+                label="Run in background"
                 checked={settings.runInBackground}
-                disabled={!settings.isEnabled}
-                onChange={(e) => change({ runInBackground: e.target.checked })}
-                className="size-4 accent-primary disabled:opacity-40 cursor-pointer"
+                blocked={!settings.isEnabled}
+                onChange={toggleBackground}
               />
-            </label>
+            </div>
+            {error?.target === "background" && (
+              <p role="alert" className="mt-1 text-xs text-error">
+                {error.message}
+              </p>
+            )}
             <p className="mt-1 text-[10px] text-outline">
               Keeps syncing even when the popup is closed.
             </p>
@@ -106,7 +184,7 @@ export default function SettingsButton() {
             </select>
 
             <button
-              onClick={() => setOpen(false)}
+              onClick={closeModal}
               className="w-full py-2 mt-3 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
             >
               Close

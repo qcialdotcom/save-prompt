@@ -105,6 +105,26 @@
       transform: translateX(40px);
     }
   }
+
+    /* Icon swap: fades one icon out while the other fades in */
+  --animate-icon-swap: icon-swap 3s ease-in-out infinite;
+
+  @keyframes icon-swap {
+    0%,
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50%,
+    90% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 
 .dark {
