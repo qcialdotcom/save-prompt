@@ -16,6 +16,9 @@ export default defineConfig({
         gecko: {
           id: "save-prompt@qcial.com",
           strict_min_version: "115.0",
+          data_collection_permissions: {
+            required: ["none"],
+          },
         },
       },
     }),
