@@ -98,7 +98,7 @@ export const ROADMAP = [
     status: "Next",
     title: "Cloud sync",
     text: "Keep prompts in sync across every device.",
-    items: ["Google Drive sync", "More drives later", "Conflict-safe merging"],
+    items: ["Google Drive sync", "Conflict-safe merging"],
   },
   {
     status: "Planned",
