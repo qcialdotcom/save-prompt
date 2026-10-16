@@ -1,12 +1,14 @@
 // components/FilterBar.tsx
 
-import { useState } from "react";
+import SettingsButton from "@/components/SettingsButton";
+import SyncButton from "@/components/SyncButton";
 import { SITE_INFO } from "@/config/site";
 import {
   deleteAllPrompts,
   exportToJSONFile,
   importFromJSONFile,
 } from "@/lib/prompts";
+import { useState } from "react";
 
 interface Props {
   onlyFavorites: boolean;
@@ -108,6 +110,9 @@ export default function FilterBar({
         </button>
 
         <div className="flex items-center gap-2 ml-auto">
+          {/* Cloud sync */}
+          <SyncButton onChanged={onChanged} />
+
           {/* Import / Export (one common icon) */}
           <button
             onClick={() => setModal("data")}
@@ -126,6 +131,9 @@ export default function FilterBar({
               <path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4" />
             </svg>
           </button>
+
+          {/* Settings */}
+          <SettingsButton />
 
           <button
             onClick={() => setModal("delete")}
