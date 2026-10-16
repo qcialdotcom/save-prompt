@@ -2,6 +2,7 @@
 // Settings modal. Right now it only has the sync settings.
 
 import { useState } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { isLoggedIn } from "@/lib/auth";
 import {
   clearDeletePrompts,
@@ -59,6 +60,7 @@ function Toggle({
 
 export default function SettingsButton() {
   const [open, setOpen] = useState(false);
+  useScrollLock(open);
   const [settings, setSettings] = useState<SyncSettings | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [trashCount, setTrashCount] = useState(0);

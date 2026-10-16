@@ -1,6 +1,7 @@
 // components/SyncButton.tsx
 
 import { useEffect, useState } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { isLoggedIn, logout } from "@/lib/auth";
 import {
   getSyncSettings,
@@ -16,6 +17,7 @@ interface Props {
 
 export default function SyncButton({ onChanged }: Props) {
   const [open, setOpen] = useState(false);
+  useScrollLock(open);
   const [settings, setSettings] = useState<SyncSettings | null>(null);
   // null = not checked yet, so the icon doesn't animate before we know
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);

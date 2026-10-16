@@ -1,6 +1,6 @@
 // entrypoints/popup/App.tsx
 
-import FilterBar from "@/components/FilterBar";
+import ActionBar from "@/components/ActionBar";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import PromptList from "@/components/PromptList";
@@ -58,7 +58,7 @@ export default function App() {
                 onChange={setQuery}
                 onAdd={() => setEditing("new")}
               />
-              <FilterBar
+              <ActionBar
                 onlyFavorites={onlyFavorites}
                 onToggleFavorites={() => setOnlyFavorites(!onlyFavorites)}
                 onChanged={load}
@@ -66,7 +66,7 @@ export default function App() {
             </div>
 
             {/* Only this part scrolls */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div data-scroll-area className="flex-1 min-h-0 overflow-y-auto">
               <PromptList
                 prompts={prompts}
                 onEdit={setEditing}
