@@ -96,6 +96,38 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
   if (!text) return prompts;
 
   const { default: Fuse } = await import("fuse.js");
+
+  if (text.startsWith("#")) {
+    // Search by tag
+    const tag = text.slice(1).toLowerCase();
+    const fuse = new Fuse(prompts, {
+      keys: ["tags"],
+      threshold: 0.3, // 0 = exact match, 1 = match anything
+      ignoreLocation: true, // match anywhere in the text
+    });
+
+    return fuse
+      .search(tag)
+      .map((result) => result.item)
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+
+  if (text.startsWith("@")) {
+    // Search by title
+    const title = text.slice(1).toLowerCase();
+
+    const fuse = new Fuse(prompts, {
+      keys: ["title"],
+      threshold: 0.3, // 0 = exact match, 1 = match anything
+      ignoreLocation: true, // match anywhere in the text
+    });
+
+    return fuse
+      .search(title)
+      .map((result) => result.item)
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }
+
   const fuse = new Fuse(prompts, {
     keys: ["title", "content", "tags"],
     threshold: 0.3, // 0 = exact match, 1 = match anything
