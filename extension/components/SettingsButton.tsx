@@ -4,6 +4,11 @@
 import { useState } from "react";
 import { isLoggedIn } from "@/lib/auth";
 import {
+  clearDeletePrompts,
+  countDeletePrompts,
+  getDeletePrompts,
+} from "@/lib/prompts";
+import {
   getSyncSettings,
   saveSyncSettings,
   scheduleSync,
@@ -11,6 +16,7 @@ import {
 } from "@/lib/sync";
 
 const INTERVALS = [
+  { secs: 60, label: "Every minute" },
   { secs: 300, label: "Every 5 minutes" },
   { secs: 900, label: "Every 15 minutes" },
   { secs: 1800, label: "Every 30 minutes" },
@@ -55,20 +61,36 @@ export default function SettingsButton() {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<SyncSettings | null>(null);
   const [signedIn, setSignedIn] = useState(false);
+  const [trashCount, setTrashCount] = useState(0);
+  const [hasUnsyncedTrash, setHasUnsyncedTrash] = useState(false);
+  const [showTrashConfirmation, setShowTrashConfirmation] = useState(false);
   const [error, setError] = useState<{
     target: ErrorTarget;
     message: string;
   } | null>(null);
 
   async function openModal() {
-    setSignedIn(await isLoggedIn());
-    setSettings(await getSyncSettings());
+    const [loggedIn, nextSettings, deletedPrompts] = await Promise.all([
+      isLoggedIn(),
+      getSyncSettings(),
+      getDeletePrompts(),
+    ]);
+    setSignedIn(loggedIn);
+    setSettings(nextSettings);
+    setTrashCount(deletedPrompts.length);
+    setHasUnsyncedTrash(
+      deletedPrompts.some(
+        (prompt) => prompt.deletedAt > nextSettings.lastSyncedAt,
+      ),
+    );
+    setShowTrashConfirmation(false);
     setError(null);
     setOpen(true);
   }
 
   function closeModal() {
     setError(null);
+    setShowTrashConfirmation(false);
     setOpen(false);
   }
 
@@ -98,6 +120,13 @@ export default function SettingsButton() {
       return;
     }
     await change({ runInBackground: value });
+  }
+
+  async function emptyTrash() {
+    await clearDeletePrompts();
+    setTrashCount(0);
+    setHasUnsyncedTrash(false);
+    setShowTrashConfirmation(false);
   }
 
   return (
@@ -182,6 +211,62 @@ export default function SettingsButton() {
                 </option>
               ))}
             </select>
+
+            <div className="mt-4 pt-3 border-t border-outline-variant">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-sm text-on-surface">
+                  <svg
+                    className="size-4 text-on-surface-variant"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
+                  </svg>
+                  <span>Trash</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTrashConfirmation(true)}
+                  disabled={trashCount === 0}
+                  className="px-2.5 py-1 text-xs font-medium rounded-md border border-error text-error hover:bg-error-container disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Empty trash
+                </button>
+              </div>
+              <p className="mt-1 text-[10px] text-on-surface-variant">
+                {trashCount} {trashCount === 1 ? "deleted prompt" : "deleted prompts"} in trash
+              </p>
+
+              {showTrashConfirmation && (
+                <div className="p-3 mt-2 rounded-lg bg-error-container/40">
+                  <p className="text-xs text-on-surface">
+                    {hasUnsyncedTrash
+                      ? "Please sync first. Emptying the trash before syncing may make deleted prompts reappear from the cloud. If you sync first, then trash will be automatically emptied."
+                      : "Emptying the trash permanently removes its sync history. Deleted prompts may reappear from the cloud if they have not synced yet."}
+                  </p>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={emptyTrash}
+                      className="flex-1 py-1.5 text-xs font-medium rounded-md bg-error text-on-error hover:opacity-90 cursor-pointer"
+                    >
+                      Delete anyway
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowTrashConfirmation(false)}
+                      className="flex-1 py-1.5 text-xs font-medium rounded-md border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <button
               onClick={closeModal}

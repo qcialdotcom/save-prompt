@@ -10,7 +10,14 @@ export interface Prompt {
   updatedAt: number;
 }
 
+export interface DeletePrompt {
+  id: string;
+  deletedAt: number;
+}
+
 const KEY = "prompts";
+
+const DELETE_KEY = "delete_prompts";
 
 const PromptSchema = z
   .object({
@@ -29,6 +36,24 @@ export async function getPrompts(): Promise<Prompt[]> {
   const data = await browser.storage.local.get(KEY);
   const prompts = (data[KEY] as Prompt[] | undefined) ?? [];
   return prompts.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+// Get all deleted prompts (newest first)
+export async function getDeletePrompts(): Promise<DeletePrompt[]> {
+  const data = await browser.storage.local.get(DELETE_KEY);
+  const prompts = (data[DELETE_KEY] as DeletePrompt[] | undefined) ?? [];
+  return prompts.sort((a, b) => b.deletedAt - a.deletedAt);
+}
+
+// count of deleted prompts
+export async function countDeletePrompts(): Promise<number> {
+  const deletePrompts = await getDeletePrompts();
+  return deletePrompts.length;
+}
+
+// reset all deleted prompts
+export async function clearDeletePrompts(): Promise<void> {
+  await browser.storage.local.set({ [DELETE_KEY]: [] });
 }
 
 // Get one prompt by id
@@ -59,6 +84,13 @@ export async function createOrUpdatePrompt(
 // Delete a prompt
 export async function deletePrompt(id: string): Promise<void> {
   const prompts = await getPrompts();
+
+  // add the deleted prompt to the delete_prompts list
+  const deletePrompts = await getDeletePrompts();
+  await browser.storage.local.set({
+    [DELETE_KEY]: [...deletePrompts, { id, deletedAt: Date.now() }],
+  });
+
   await browser.storage.local.set({
     [KEY]: prompts.filter((p) => p.id !== id),
   });
@@ -242,12 +274,21 @@ export async function mergePrompts(prompts: Prompt[]): Promise<void> {
   );
 
   for (const prompt of prompts) {
-    const existing = promptMap.get(prompt.id);
+    const current = promptMap.get(prompt.id);
 
-    if (!existing || prompt.updatedAt > existing.updatedAt) {
+    if (!current || prompt.updatedAt > current.updatedAt) {
       promptMap.set(prompt.id, prompt);
     }
   }
+
+  // remove deleted prompts from the promptMap
+  const deletePrompts = await getDeletePrompts();
+
+  for (const deletePrompt of deletePrompts) {
+    promptMap.delete(deletePrompt.id);
+  }
+
+  await clearDeletePrompts();
 
   await browser.storage.local.set({
     [KEY]: [...promptMap.values()].sort((a, b) => b.createdAt - a.createdAt),
