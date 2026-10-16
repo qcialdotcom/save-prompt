@@ -16,7 +16,7 @@ export const SITE_INFO = {
     height: 630,
   },
   themeColor: { light: "#faf8ff", dark: "#10131f" },
-  parent: { name: "Qcial Labs", url: "https://qcial.com" },
+  parent: { name: "Qcial.Com", url: "https://qcial.com" },
   socials: {
     github: "https://github.com/qcialdotcom/",
     linkedin: "https://linkedin.com/company/qcialdotcom/",

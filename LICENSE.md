@@ -1,10 +1,10 @@
 Personal and Internal Business Use License
 
-Copyright © 2026 Qcial Labs (Qcial.com). All rights reserved.
+Copyright © 2026 Qcial.Com (Qcial.com). All rights reserved.
 
 ## 1. Grant of License
 
-Subject to the terms of this License, Qcial Labs (“Licensor”) grants you a limited, worldwide, non-exclusive, non-transferable, non-sublicensable, and revocable license to use, reproduce, and modify the Software solely for the following purposes:
+Subject to the terms of this License, Qcial.Com (“Licensor”) grants you a limited, worldwide, non-exclusive, non-transferable, non-sublicensable, and revocable license to use, reproduce, and modify the Software solely for the following purposes:
 
 **a. Personal Use:** Use by an individual for their own personal, non-commercial purposes.
 

@@ -7,5 +7,5 @@ export const SITE_INFO = {
   url: "https://save-prompt.qcial.com",
   email: "contact@qcial.com",
   logo: { src: "/logo.webp", alt: "Save Prompt logo" },
-  parent: { name: "Qcial Labs", url: "https://qcial.com" },
+  parent: { name: "Qcial.Com", url: "https://qcial.com" },
 };
