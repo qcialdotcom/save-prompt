@@ -3,7 +3,7 @@
 export const SITE_INFO = {
   name: "Save Prompt",
   tagline: "Your AI prompt manager - save, search & reuse prompts instantly.",
-  title: "Save Prompt - Free AI Prompt Manager for Chrome & Firefox",
+  title: "Save Prompt - Free AI Prompt Manager Browser Extension",
   description:
     "Save Prompt is a free browser extension to save, organize, search, and reuse your AI prompts for ChatGPT, Claude, Gemini and more. Local-first, no login required. Works on Chrome and Firefox.",
   url: "https://save-prompt.qcial.com",
@@ -11,7 +11,7 @@ export const SITE_INFO = {
   logo: { src: "/logo.webp", alt: "Save Prompt logo" },
   ogImage: {
     src: "/logo.png",
-    alt: "Save Prompt - Free AI Prompt Manager for Chrome & Firefox",
+    alt: "Save Prompt Open Graph image",
     width: 1200,
     height: 630,
   },
