@@ -4,6 +4,7 @@ import Main from "@/layouts/main.astro";
 import { GUIDE_ROUTE } from "@/configs/routes";
 import { SITE_INFO } from "@/configs/site";
 
+// Example JSON shown in the textarea and in the "Valid example" box
 const example = `[
   {
     "id": "prompt-id",
@@ -16,6 +17,7 @@ const example = `[
   }
 ]`;
 
+// Rows for the "Required fields" list: [name, type, note]
 const fields = [
   ["id", "string", "Unique within the file"],
   ["title", "string", "The prompt title"],
@@ -46,19 +48,13 @@ const fields = [
         <div class="mt-10 rounded-3xl border border-outline-variant bg-surface-container-lowest p-6">
           <h2 class="text-xl font-bold text-on-surface">Test an import file</h2>
           <p class="mt-1 text-sm text-on-surface-variant">Runs in your browser. Nothing is uploaded.</p>
-          <textarea
-            id="json-input"
-            rows="12"
-            spellcheck="false"
-            class="mt-4 block w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3 font-mono text-sm text-on-surface outline-none focus:border-primary"
-            placeholder="Paste a JSON array here...">{example}</textarea
-          >
-          <div class="mt-4 flex gap-3">
+
+          <div class="mt-4 flex flex-wrap gap-3">
             <button
-              id="validate-json"
+              id="select-json-file"
               type="button"
-              class="min-h-11 rounded-full bg-primary px-5 font-semibold text-on-primary hover:opacity-90 cursor-pointer"
-              >Validate JSON</button
+              class="min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+              >Select file</button
             >
             <button
               id="clear-json"
@@ -66,8 +62,61 @@ const fields = [
               class="min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
               >Clear</button
             >
+            <input id="json-file" type="file" accept=".json,application/json" class="hidden" />
           </div>
+
+          <textarea
+            id="json-input"
+            rows="12"
+            spellcheck="false"
+            data-example={example}
+            class="mt-4 block w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3 font-mono text-sm text-on-surface outline-none focus:border-primary"
+            placeholder="Paste a JSON array here...">{example}</textarea
+          >
+
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button
+              id="validate-json"
+              type="button"
+              class="min-h-11 rounded-full bg-primary px-5 font-semibold text-on-primary hover:opacity-90 cursor-pointer"
+              >Validate JSON</button
+            >
+            <button
+              id="download-json"
+              type="button"
+              class="min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+              >Download file</button
+            >
+            <button
+              id="fix-chatgpt"
+              type="button"
+              class="hidden min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+              >Fix with ChatGPT</button
+            >
+            <button
+              id="copy-prompt"
+              type="button"
+              class="hidden min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+              >Copy fix prompt</button
+            >
+          </div>
+
           <div id="validation-result" class="hidden" role="status"></div>
+
+          <!-- Manual copy box: shown only when the browser blocks clipboard access -->
+          <div id="prompt-fallback" class="hidden mt-4">
+            <p class="text-sm text-on-surface-variant">
+              Your browser blocked automatic copying. The prompt is selected below. Press Ctrl+C (or Cmd+C on Mac) to copy it,
+              then paste it into ChatGPT.
+            </p>
+            <textarea
+              id="prompt-text"
+              rows="8"
+              readonly
+              spellcheck="false"
+              class="mt-2 block w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3 font-mono text-xs text-on-surface outline-none focus:border-primary"
+            ></textarea>
+          </div>
         </div>
 
         <div class="mt-6 rounded-3xl bg-inverse-surface p-6 text-inverse-on-surface">
@@ -109,10 +158,19 @@ const fields = [
 </Main>
 
 <script>
-  const input = document.querySelector<HTMLTextAreaElement>("#json-input");
-  const result = document.querySelector<HTMLDivElement>("#validation-result");
+  // Page elements
+  const jsonInput = document.querySelector<HTMLTextAreaElement>("#json-input");
+  const resultBox = document.querySelector<HTMLDivElement>("#validation-result");
+  const fileInput = document.querySelector<HTMLInputElement>("#json-file");
+  const fixButton = document.querySelector<HTMLButtonElement>("#fix-chatgpt");
+  const copyButton = document.querySelector<HTMLButtonElement>("#copy-prompt");
+  const manualCopyBox = document.querySelector<HTMLDivElement>("#prompt-fallback");
+  const manualCopyText = document.querySelector<HTMLTextAreaElement>("#prompt-text");
 
-  const fields: Record<string, string> = {
+  // Schema rules
+
+  // Each required field and its expected type
+  const fieldTypes: Record<string, string> = {
     id: "string",
     title: "string",
     content: "string",
@@ -121,63 +179,105 @@ const fields = [
     createdAt: "number",
     updatedAt: "number",
   };
-  const names = Object.keys(fields);
+  const fieldNames = Object.keys(fieldTypes);
 
-  // Friendly names for the expected types
-  const expectedLabel: Record<string, string> = {
+  // Simple words for each expected type (used in error messages)
+  const expectedTypeLabel: Record<string, string> = {
     string: "text (in double quotes)",
     array: 'a list like ["a", "b"]',
     boolean: "true or false (no quotes)",
     number: "a number (no quotes)",
   };
 
+  // One group = one prompt (or one general error) with its list of problems
   type Group = { title: string; lines: string[] };
 
-  const okClass = "mt-4 rounded-2xl border border-tertiary bg-tertiary/15 p-4 text-sm text-tertiary";
-  const errorClass = "mt-4 rounded-2xl border border-error bg-error/10 p-4 text-sm text-red-700";
+  // Styles for the result box
+  const successBoxClass = "mt-4 rounded-2xl border border-tertiary bg-tertiary/15 p-4 text-sm text-tertiary";
+  const errorBoxClass = "mt-4 rounded-2xl border border-error bg-error/10 p-4 text-sm text-red-700";
 
-  function show(valid: boolean, heading: string, groups: Group[]) {
-    if (!result) return;
-    result.className = valid ? okClass : errorClass;
-    result.replaceChildren();
+  // Show / hide helpers
 
-    const title = document.createElement("strong");
-    title.textContent = heading;
-    result.append(title);
-
-    const list = document.createElement("ul");
-    list.className = "mt-2 space-y-3";
-
-    groups.slice(0, 20).forEach((group) => {
-      const item = document.createElement("li");
-      if (group.title) {
-        const name = document.createElement("div");
-        name.className = "font-semibold";
-        name.textContent = group.title;
-        item.append(name);
-      }
-      const sub = document.createElement("ul");
-      sub.className = "mt-1 list-disc space-y-1 pl-5";
-      group.lines.forEach((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
-        sub.append(li);
-      });
-      item.append(sub);
-      list.append(item);
-    });
-
-    if (groups.length > 20) {
-      const more = document.createElement("li");
-      more.textContent = `...and ${groups.length - 20} more prompt(s) with problems.`;
-      list.append(more);
-    }
-
-    result.append(list);
+  // Show or hide the "Fix with ChatGPT" and "Copy fix prompt" buttons
+  function showOrHideFixButtons(visible: boolean) {
+    fixButton?.classList.toggle("hidden", !visible);
+    copyButton?.classList.toggle("hidden", !visible);
   }
 
+  // Hide the manual copy box
+  function hideManualCopyBox() {
+    manualCopyBox?.classList.add("hidden");
+  }
+
+  // Show the prompt in a selected box so the user can copy it by hand
+  function showManualCopyBox(prompt: string) {
+    if (!manualCopyBox || !manualCopyText) return;
+    manualCopyText.value = prompt;
+    manualCopyBox.classList.remove("hidden");
+    manualCopyText.focus();
+    manualCopyText.select();
+  }
+
+  // Remove the old result, the fix buttons and the manual copy box
+  function clearValidationResult() {
+    if (resultBox) resultBox.className = "hidden";
+    showOrHideFixButtons(false);
+    hideManualCopyBox();
+  }
+
+  // Draw the result box: a heading and a list of problem groups
+  function showResult(isValid: boolean, heading: string, groups: Group[], offerFix: boolean = !isValid) {
+    if (!resultBox) return;
+    resultBox.className = isValid ? successBoxClass : errorBoxClass;
+    resultBox.replaceChildren();
+    showOrHideFixButtons(offerFix);
+
+    // Heading text
+    const headingElement = document.createElement("strong");
+    headingElement.textContent = heading;
+    resultBox.append(headingElement);
+
+    const groupList = document.createElement("ul");
+    groupList.className = "mt-2 space-y-3";
+
+    // Show at most 20 groups
+    groups.slice(0, 20).forEach((group) => {
+      const groupItem = document.createElement("li");
+
+      // Group title (for example: Prompt 2 ("My title"))
+      if (group.title) {
+        const groupTitle = document.createElement("div");
+        groupTitle.className = "font-semibold";
+        groupTitle.textContent = group.title;
+        groupItem.append(groupTitle);
+      }
+
+      // Problem lines for this group
+      const lineList = document.createElement("ul");
+      lineList.className = "mt-1 list-disc space-y-1 pl-5";
+      group.lines.forEach((line) => {
+        const lineItem = document.createElement("li");
+        lineItem.textContent = line;
+        lineList.append(lineItem);
+      });
+      groupItem.append(lineList);
+      groupList.append(groupItem);
+    });
+
+    // Tell the user when more than 20 prompts have problems
+    if (groups.length > 20) {
+      const moreItem = document.createElement("li");
+      moreItem.textContent = `...and ${groups.length - 20} more prompt(s) with problems.`;
+      groupList.append(moreItem);
+    }
+
+    resultBox.append(groupList);
+  }
+
+  // Error message helpers
+
   // Describe the real type of a value in plain words
-  function describe(value: unknown): string {
+  function describeType(value: unknown): string {
     if (value === null) return "empty (null)";
     if (Array.isArray(value)) return "a list";
     switch (typeof value) {
@@ -194,161 +294,377 @@ const fields = [
     }
   }
 
-  // Turn browser JSON errors into friendly sentences
-  function explainSyntaxError(text: string, error: unknown): string[] {
-    const raw = error instanceof SyntaxError ? error.message : "Invalid JSON.";
+  // Turn a browser JSON error into friendly sentences (with line and column)
+  function getSyntaxErrorMessages(text: string, error: unknown): string[] {
+    const rawMessage = error instanceof SyntaxError ? error.message : "Invalid JSON.";
     let line = 0;
     let column = 0;
 
-    const lc = raw.match(/line (\d+) column (\d+)/i);
-    const pos = raw.match(/position (\d+)/i);
-    if (lc) {
-      line = Number(lc[1]);
-      column = Number(lc[2]);
-    } else if (pos) {
-      const before = text.slice(0, Number(pos[1]));
-      line = before.split("\n").length;
-      column = before.length - before.lastIndexOf("\n");
+    // Some browsers give "line X column Y", others give only "position N"
+    const lineColumnMatch = rawMessage.match(/line (\d+) column (\d+)/i);
+    const positionMatch = rawMessage.match(/position (\d+)/i);
+    if (lineColumnMatch) {
+      line = Number(lineColumnMatch[1]);
+      column = Number(lineColumnMatch[2]);
+    } else if (positionMatch) {
+      // Work out line and column from the character position
+      const textBefore = text.slice(0, Number(positionMatch[1]));
+      line = textBefore.split("\n").length;
+      column = textBefore.length - textBefore.lastIndexOf("\n");
     }
 
+    // Pick a simple hint that matches the error type
     let hint = "There is a typo in the JSON near this spot.";
-    if (/double-quoted property name/i.test(raw)) {
+    if (/double-quoted property name/i.test(rawMessage)) {
       hint = 'Remove the extra comma after the last field, or put the field name in double quotes ("like this").';
-    } else if (/unexpected end/i.test(raw)) {
+    } else if (/unexpected end/i.test(rawMessage)) {
       hint = "The JSON looks incomplete. A closing ] or } is probably missing at the end.";
-    } else if (/after property value|after array element|expected ','/i.test(raw)) {
+    } else if (/after property value|after array element|expected ','/i.test(rawMessage)) {
       hint = "A comma is missing between two fields or two items.";
-    } else if (/expected property name|expected ':'/i.test(raw)) {
+    } else if (/expected property name|expected ':'/i.test(rawMessage)) {
       hint = "A field name or a colon (:) is missing or misplaced.";
-    } else if (/unexpected token|unexpected character|not valid json/i.test(raw)) {
+    } else if (/unexpected token|unexpected character|not valid json/i.test(rawMessage)) {
       hint =
         "An unexpected character was found. Check for single quotes (use double quotes), a missing quote, or text outside the JSON.";
-    } else if (/unterminated string|bad control character/i.test(raw)) {
+    } else if (/unterminated string|bad control character/i.test(rawMessage)) {
       hint = "A text value is missing its closing quote, or has a line break inside it.";
     }
 
-    const where = line ? `Line ${line}, column ${column}: ` : "";
-    const sourceLine = line ? text.split("\n")[line - 1]?.trim() : "";
-    const lines = [`${where}${hint}`];
-    if (sourceLine) lines.push(`Near: ${sourceLine.slice(0, 80)}`);
-    return lines;
+    const location = line ? `Line ${line}, column ${column}: ` : "";
+    const errorLineText = line ? text.split("\n")[line - 1]?.trim() : "";
+    const messages = [`${location}${hint}`];
+    // Show the bad line (first 80 characters)
+    if (errorLineText) messages.push(`Near: ${errorLineText.slice(0, 80)}`);
+    return messages;
   }
 
-  function validate() {
-    if (!input) return;
+  // Main validation
 
-    if (!input.value.trim()) {
-      show(false, "Nothing to check", [{ title: "", lines: ["Paste your JSON into the box first."] }]);
+  // Check the JSON in the textarea and show the result
+  function validatePromptJson() {
+    if (!jsonInput) return;
+    hideManualCopyBox();
+
+    // Empty box: nothing to fix, so no ChatGPT or Copy button
+    if (!jsonInput.value.trim()) {
+      showResult(false, "Nothing to check", [{ title: "", lines: ["Paste your JSON into the box first."] }], false);
       return;
     }
 
-    let data: unknown;
+    // Step 1: is it valid JSON syntax?
+    let parsedData: unknown;
     try {
-      data = JSON.parse(input.value);
+      parsedData = JSON.parse(jsonInput.value);
     } catch (error) {
-      show(false, "The JSON is not written correctly", [{ title: "", lines: explainSyntaxError(input.value, error) }]);
+      showResult(false, "The JSON is not written correctly", [
+        { title: "", lines: getSyntaxErrorMessages(jsonInput.value, error) },
+      ]);
       return;
     }
 
-    if (!Array.isArray(data)) {
-      show(false, "Import cannot continue", [
+    // Step 2: the top level must be a list
+    if (!Array.isArray(parsedData)) {
+      showResult(false, "Import cannot continue", [
         {
           title: "",
-          lines: ["The file must start with [ and end with ] (a list of prompts). Right now it is " + describe(data) + "."],
+          lines: [
+            "The file must start with [ and end with ] (a list of prompts). Right now it is " + describeType(parsedData) + ".",
+          ],
         },
       ]);
       return;
     }
 
-    if (data.length === 0) {
-      show(false, "Import cannot continue", [{ title: "", lines: ["The list is empty. Add at least one prompt."] }]);
+    // Step 3: the list must not be empty
+    if (parsedData.length === 0) {
+      showResult(false, "Import cannot continue", [{ title: "", lines: ["The list is empty. Add at least one prompt."] }]);
       return;
     }
 
-    const groups: Group[] = [];
-    const ids = new Set<string>();
+    // Step 4: check every prompt one by one
+    const problemGroups: Group[] = [];
+    const usedIds = new Set<string>();
 
-    data.forEach((item, index) => {
-      const lines: string[] = [];
-      let label = `Prompt ${index + 1}`;
+    parsedData.forEach((item, index) => {
+      const problems: string[] = [];
+      let promptLabel = `Prompt ${index + 1}`;
 
+      // Each prompt must be an object
       if (!item || typeof item !== "object" || Array.isArray(item)) {
-        groups.push({ title: label, lines: [`This must be an object { ... } with 7 fields, but it is ${describe(item)}.`] });
+        problemGroups.push({
+          title: promptLabel,
+          lines: [`This must be an object { ... } with 7 fields, but it is ${describeType(item)}.`],
+        });
         return;
       }
 
-      const record = item as Record<string, unknown>;
-      if (typeof record.title === "string" && record.title.trim()) {
-        label += ` ("${record.title.trim().slice(0, 40)}")`;
+      const promptRecord = item as Record<string, unknown>;
+
+      // Add the title to the label to make the prompt easy to find
+      if (typeof promptRecord.title === "string" && promptRecord.title.trim()) {
+        promptLabel += ` ("${promptRecord.title.trim().slice(0, 40)}")`;
       }
 
-      // Missing fields
-      const missing = names.filter((name) => !(name in record));
-      if (missing.length) {
-        lines.push(`Missing field${missing.length > 1 ? "s" : ""}: ${missing.join(", ")}`);
+      // Check for missing fields
+      const missingFields = fieldNames.filter((name) => !(name in promptRecord));
+      if (missingFields.length) {
+        problems.push(`Missing field${missingFields.length > 1 ? "s" : ""}: ${missingFields.join(", ")}`);
       }
 
-      // Extra fields
-      const extra = Object.keys(record).filter((key) => !names.includes(key));
-      if (extra.length) {
-        lines.push(
-          `Not allowed field${extra.length > 1 ? "s" : ""}: ${extra.join(", ")} (remove ${extra.length > 1 ? "them" : "it"})`,
+      // Check for extra fields
+      const extraFields = Object.keys(promptRecord).filter((key) => !fieldNames.includes(key));
+      if (extraFields.length) {
+        problems.push(
+          `Not allowed field${extraFields.length > 1 ? "s" : ""}: ${extraFields.join(", ")} (remove ${extraFields.length > 1 ? "them" : "it"})`,
         );
       }
 
-      // Wrong types
-      names.forEach((name) => {
-        if (!(name in record)) return;
-        const value = record[name];
-        const expected = fields[name];
-        const ok = expected === "array" ? Array.isArray(value) : typeof value === expected;
+      // Check the type of each field
+      fieldNames.forEach((name) => {
+        if (!(name in promptRecord)) return;
+        const value = promptRecord[name];
+        const expectedType = fieldTypes[name];
+        const hasCorrectType = expectedType === "array" ? Array.isArray(value) : typeof value === expectedType;
 
-        if (!ok) {
-          lines.push(`"${name}" has the wrong type. Expected ${expectedLabel[expected]}, but found ${describe(value)}.`);
+        if (!hasCorrectType) {
+          problems.push(
+            `"${name}" has the wrong type. Expected ${expectedTypeLabel[expectedType]}, but found ${describeType(value)}.`,
+          );
           return;
         }
 
+        // Every tag must be text
         if (name === "tags") {
-          const bad = (value as unknown[]).findIndex((tag) => typeof tag !== "string");
-          if (bad !== -1) {
-            lines.push(`"tags" item ${bad + 1} must be text, but found ${describe((value as unknown[])[bad])}.`);
+          const badTagIndex = (value as unknown[]).findIndex((tag) => typeof tag !== "string");
+          if (badTagIndex !== -1) {
+            problems.push(
+              `"tags" item ${badTagIndex + 1} must be text, but found ${describeType((value as unknown[])[badTagIndex])}.`,
+            );
           }
         }
 
+        // Dates must be real numbers (not NaN or Infinity)
         if ((name === "createdAt" || name === "updatedAt") && !Number.isFinite(value)) {
-          lines.push(`"${name}" must be a finite number (milliseconds), not NaN or Infinity.`);
+          problems.push(`"${name}" must be a finite number (milliseconds), not NaN or Infinity.`);
         }
       });
 
-      // Duplicate ids
-      if (typeof record.id === "string") {
-        if (ids.has(record.id)) {
-          lines.push(`"id" "${record.id}" is already used by another prompt. Each id must be unique.`);
+      // Check that the id is unique
+      if (typeof promptRecord.id === "string") {
+        if (usedIds.has(promptRecord.id)) {
+          problems.push(`"id" "${promptRecord.id}" is already used by another prompt. Each id must be unique.`);
         }
-        ids.add(record.id);
+        usedIds.add(promptRecord.id);
       }
 
-      if (lines.length) groups.push({ title: label, lines });
+      // Save this prompt's problems (if any)
+      if (problems.length) problemGroups.push({ title: promptLabel, lines: problems });
     });
 
-    if (groups.length) {
-      show(
+    // Step 5: show the final result
+    if (problemGroups.length) {
+      showResult(
         false,
-        `Import cannot continue: ${groups.length} of ${data.length} prompt${data.length === 1 ? "" : "s"} ${
-          groups.length === 1 ? "has" : "have"
+        `Import cannot continue: ${problemGroups.length} of ${parsedData.length} prompt${parsedData.length === 1 ? "" : "s"} ${
+          problemGroups.length === 1 ? "has" : "have"
         } problems`,
-        groups,
+        problemGroups,
       );
     } else {
-      show(true, "Valid JSON file", [
-        { title: "", lines: [`${data.length} prompt${data.length === 1 ? "" : "s"} ready to import.`] },
+      showResult(true, "Valid JSON file", [
+        { title: "", lines: [`${parsedData.length} prompt${parsedData.length === 1 ? "" : "s"} ready to import.`] },
       ]);
     }
   }
 
-  document.querySelector("#validate-json")?.addEventListener("click", validate);
+  // Button events
+
+  // Validate button
+  document.querySelector("#validate-json")?.addEventListener("click", validatePromptJson);
+
+  // Hide old result, buttons and manual copy box as soon as the text is edited
+  jsonInput?.addEventListener("input", clearValidationResult);
+
+  // Clear button: empty the textarea
   document.querySelector("#clear-json")?.addEventListener("click", () => {
-    if (input) input.value = "";
-    if (result) result.className = "hidden";
+    if (jsonInput) jsonInput.value = "";
+    clearValidationResult();
+  });
+
+  // Select file button: open the file picker
+  document.querySelector("#select-json-file")?.addEventListener("click", () => fileInput?.click());
+
+  // After a file is chosen, put its text into the textarea
+  fileInput?.addEventListener("change", async () => {
+    const selectedFile = fileInput.files?.[0];
+    if (!selectedFile || !jsonInput) return;
+    jsonInput.value = await selectedFile.text();
+    fileInput.value = ""; // allows selecting the same file again
+    clearValidationResult();
+  });
+
+  // Download button: save the textarea content as a .json file
+  document.querySelector("#download-json")?.addEventListener("click", () => {
+    if (!jsonInput) return;
+
+    if (!jsonInput.value.trim()) {
+      showResult(false, "Nothing to download", [{ title: "", lines: ["The box is empty. Paste your JSON first."] }], false);
+      return;
+    }
+
+    // Make a temporary link and click it to start the download
+    const fileBlob = new Blob([jsonInput.value], { type: "application/json" });
+    const downloadUrl = URL.createObjectURL(fileBlob);
+    const downloadLink = document.createElement("a");
+    downloadLink.href = downloadUrl;
+    downloadLink.download = "prompts.json";
+    document.body.append(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+    URL.revokeObjectURL(downloadUrl);
+  });
+
+  // ChatGPT fix prompt
+
+  // If the ChatGPT link is longer than this, we open ChatGPT empty
+  const MAX_URL_LENGTH = 7000;
+
+  // Build the text we send to ChatGPT: rules + example + the user's JSON
+  function buildFixPrompt(userJson: string, exampleJson: string): string {
+    return [
+      "Fix my JSON file so it can be imported into a prompt manager app.",
+      "",
+      "The file must be a JSON array of objects. Every object must have exactly these 7 fields and no others:",
+      '- "id": string, unique within the file',
+      '- "title": string, the prompt title',
+      '- "content": string, the prompt text',
+      '- "tags": array of strings (can be empty)',
+      '- "isFavorite": boolean (true or false, no quotes)',
+      '- "createdAt": finite number, time in milliseconds (no quotes)',
+      '- "updatedAt": finite number, time in milliseconds (no quotes)',
+      "",
+      "Correct example format:",
+      "```json",
+      exampleJson,
+      "```",
+      "",
+      "Rules for the fix:",
+      "- Keep all my original titles, content and tags. Only fix the structure.",
+      "- Remove any extra fields, add any missing fields, and fix wrong types.",
+      "- Make every id unique.",
+      "- Fix JSON syntax errors (commas, quotes, brackets).",
+      "- If createdAt/updatedAt are missing, use the current time in milliseconds.",
+      "- Return only the corrected JSON array in a single json code block, then a short list of what you changed.",
+      "",
+      "My JSON file:",
+      "```json",
+      userJson,
+      "```",
+    ].join("\n");
+  }
+
+  // Copy text to the clipboard. Try the modern way first, then the old way.
+  // Returns false if the browser blocks both.
+  async function copyTextToClipboard(text: string): Promise<boolean> {
+    // Modern way
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // continue to the older method
+    }
+
+    // Old way: use a hidden textarea
+    try {
+      const hiddenTextarea = document.createElement("textarea");
+      hiddenTextarea.value = text;
+      hiddenTextarea.setAttribute("readonly", "");
+      hiddenTextarea.style.position = "fixed";
+      hiddenTextarea.style.opacity = "0";
+      document.body.append(hiddenTextarea);
+      hiddenTextarea.select();
+      const wasCopied = document.execCommand("copy");
+      hiddenTextarea.remove();
+      return wasCopied;
+    } catch {
+      return false;
+    }
+  }
+
+  // Get the fix prompt for the JSON currently in the textarea
+  function getCurrentFixPrompt(): string {
+    return buildFixPrompt(jsonInput?.value.trim() ?? "", jsonInput?.dataset.example ?? "");
+  }
+
+  // Copy fix prompt button: for people who want to paste it into ChatGPT themselves
+  copyButton?.addEventListener("click", async () => {
+    if (!jsonInput || !jsonInput.value.trim()) return;
+
+    const fixPrompt = getCurrentFixPrompt();
+    const wasCopied = await copyTextToClipboard(fixPrompt);
+
+    if (wasCopied) {
+      hideManualCopyBox();
+      showResult(
+        true,
+        "Prompt copied",
+        [{ title: "", lines: ["Paste it into ChatGPT (Ctrl+V) to get your corrected JSON."] }],
+        true,
+      );
+    } else {
+      // Clipboard blocked: let the user copy by hand
+      showResult(false, "Clipboard is blocked", [{ title: "", lines: ["Copy the prompt from the box below instead."] }], true);
+      showManualCopyBox(fixPrompt);
+    }
+  });
+
+  // Fix with ChatGPT button: open ChatGPT with the prompt filled in
+  fixButton?.addEventListener("click", async () => {
+    if (!jsonInput || !jsonInput.value.trim()) return;
+
+    const fixPrompt = getCurrentFixPrompt();
+    const chatGptUrl = `https://chatgpt.com/?q=${encodeURIComponent(fixPrompt)}`;
+    const isUrlTooLong = chatGptUrl.length > MAX_URL_LENGTH;
+
+    // Open first (inside the click) so the browser does not block the new tab
+    window.open(isUrlTooLong ? "https://chatgpt.com/" : chatGptUrl, "_blank", "noopener");
+
+    // Always try to copy the prompt as a backup
+    const wasCopied = await copyTextToClipboard(fixPrompt);
+
+    if (isUrlTooLong) {
+      if (wasCopied) {
+        hideManualCopyBox();
+        showResult(
+          true,
+          "Prompt copied",
+          [{ title: "", lines: ["Your file is large, so ChatGPT was opened empty. Paste (Ctrl+V) into the chat to send it."] }],
+          true,
+        );
+      } else {
+        showResult(
+          false,
+          "File is too large to send automatically",
+          [{ title: "", lines: ["ChatGPT was opened empty. Copy the prompt from the box below and paste it there."] }],
+          true,
+        );
+        showManualCopyBox(fixPrompt);
+      }
+    } else {
+      hideManualCopyBox();
+      showResult(
+        true,
+        "Opened ChatGPT",
+        [
+          {
+            title: "",
+            lines: [
+              "Your file, the correct example and the rules were sent." + (wasCopied ? " A copy is also on your clipboard." : ""),
+            ],
+          },
+        ],
+        true,
+      );
+    }
   });
 </script>
