@@ -2,16 +2,14 @@
 // src/components/footer.astro
 import logo from "@/assets/logo.png";
 import {
+  COMPARE_ROUTE,
   DOWNLOAD_ROUTE,
   FAQ_ROUTE,
   FEATURES_ROUTE,
+  GUIDE_ROUTE,
   HOME_ROUTE,
   HOW_IT_WORKS_ROUTE,
-  COMPARE_ROUTE,
-  GUIDE_ROUTE,
   PRIVACY_PAGE_ROUTE,
-  PRIVACY_ROUTE,
-  ROADMAP_ROUTE,
   SCHEMA_ROUTE,
 } from "@/configs/routes";
 import { SITE_INFO } from "@/configs/site";
@@ -20,7 +18,7 @@ import { Mail } from "@lucide/astro";
 import { Image } from "astro:assets";
 
 const PRODUCT_LINKS = [FEATURES_ROUTE, HOW_IT_WORKS_ROUTE, COMPARE_ROUTE, DOWNLOAD_ROUTE];
-const RESOURCE_LINKS = [GUIDE_ROUTE, SCHEMA_ROUTE, FAQ_ROUTE, PRIVACY_PAGE_ROUTE, PRIVACY_ROUTE];
+const RESOURCE_LINKS = [GUIDE_ROUTE, SCHEMA_ROUTE, FAQ_ROUTE, PRIVACY_PAGE_ROUTE];
 
 const ICONS = simpleIcons.icons as Record<string, { body: string }>;
 

@@ -25,11 +25,6 @@ export const HOW_IT_WORKS_ROUTE: Route = {
   name: "How it works",
 };
 
-export const PRIVACY_ROUTE: Route = {
-  path: "/#privacy",
-  name: "Privacy",
-};
-
 export const ROADMAP_ROUTE: Route = {
   path: "/#roadmap",
   name: "Roadmap",
