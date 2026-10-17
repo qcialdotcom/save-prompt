@@ -7,6 +7,7 @@ import {
   getSyncSettings,
   saveSyncSettings,
   scheduleSync,
+  resetCloud,
   syncNow,
   type SyncSettings,
 } from "@/lib/sync";
@@ -14,6 +15,8 @@ import {
 interface Props {
   onChanged: () => void; // reload list after sync
 }
+
+const RESET_TEXT = "RESET CLOUD";
 
 export default function SyncButton({ onChanged }: Props) {
   const [open, setOpen] = useState(false);
@@ -23,6 +26,8 @@ export default function SyncButton({ onChanged }: Props) {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetTyped, setResetTyped] = useState("");
 
   async function refresh() {
     const [nextSettings, nextLoggedIn] = await Promise.all([
@@ -40,6 +45,8 @@ export default function SyncButton({ onChanged }: Props) {
 
   function openModal() {
     setOpen(true);
+    setResetOpen(false);
+    setResetTyped("");
     setError("");
     refresh();
   }
@@ -74,6 +81,27 @@ export default function SyncButton({ onChanged }: Props) {
     await saveSyncSettings({ isEnabled: false });
     await scheduleSync();
     await refresh();
+  }
+
+  function closeReset() {
+    setResetOpen(false);
+    setResetTyped("");
+  }
+
+  async function handleResetCloud() {
+    if (resetTyped !== RESET_TEXT) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      await resetCloud();
+      closeReset();
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Cloud reset failed.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   const showLoginHint = loggedIn === false;
@@ -124,18 +152,62 @@ export default function SyncButton({ onChanged }: Props) {
 
       {open && settings && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            closeReset();
+          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-sm p-4 rounded-xl bg-surface border border-outline-variant shadow-lg shadow-shadow-primary animate-slide-in"
           >
-            <h2 className="text-sm font-semibold text-on-surface">
-              Cloud sync
-            </h2>
+            {resetOpen ? (
+              <>
+                <h2 className="text-sm font-semibold text-error">
+                  Reset cloud data?
+                </h2>
+                <p className="mt-1 text-xs text-on-surface-variant">
+                  This deletes the prompts stored in Google Drive and cannot be
+                  undone. Your local prompts will not be affected. Type{" "}
+                  <span className="font-semibold text-on-surface">
+                    {RESET_TEXT}
+                  </span>{" "}
+                  and press Enter.
+                </p>
+                <input
+                  autoFocus
+                  value={resetTyped}
+                  onChange={(e) => setResetTyped(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") closeReset();
+                    if (e.key === "Enter") handleResetCloud();
+                  }}
+                  placeholder={RESET_TEXT}
+                  className="w-full px-3 py-2 mt-3 text-sm rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline outline-none focus:border-error"
+                />
+                <button
+                  onClick={handleResetCloud}
+                  disabled={busy || resetTyped !== RESET_TEXT}
+                  className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-error text-on-error hover:opacity-90 disabled:opacity-40 cursor-pointer"
+                >
+                  {busy ? "Resetting..." : "Reset cloud"}
+                </button>
+                <button
+                  onClick={closeReset}
+                  disabled={busy}
+                  className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container disabled:opacity-40 cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-sm font-semibold text-on-surface">
+                  Cloud sync
+                </h2>
 
-            {!loggedIn ? (
+                {!loggedIn ? (
               // Not logged in: ask for login
               <>
                 <p className="mt-1 text-xs text-on-surface-variant">
@@ -178,21 +250,30 @@ export default function SyncButton({ onChanged }: Props) {
                 >
                   Sign out
                 </button>
+                <button
+                  onClick={() => setResetOpen(true)}
+                  disabled={busy}
+                  className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-error text-error hover:bg-error-container disabled:opacity-40 cursor-pointer"
+                >
+                  Reset cloud
+                </button>
+              </>
+                )}
+
+                {(error || settings.lastSyncError) && (
+                  <p className="mt-2 text-xs text-error">
+                    {error || settings.lastSyncError}
+                  </p>
+                )}
+
+                <button
+                  onClick={() => setOpen(false)}
+                  className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
+                >
+                  Close
+                </button>
               </>
             )}
-
-            {(error || settings.lastSyncError) && (
-              <p className="mt-2 text-xs text-error">
-                {error || settings.lastSyncError}
-              </p>
-            )}
-
-            <button
-              onClick={() => setOpen(false)}
-              className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

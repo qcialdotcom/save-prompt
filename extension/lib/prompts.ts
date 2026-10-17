@@ -98,6 +98,21 @@ export async function deletePrompt(id: string): Promise<void> {
 
 // Delete all prompts
 export async function deleteAllPrompts(): Promise<void> {
+  // add all prompts to the delete_prompts list
+  const prompts = await getPrompts();
+  const deletePrompts = await getDeletePrompts();
+  const now = Date.now();
+
+  const newDeletePrompts: DeletePrompt[] = prompts.map((p) => ({
+    id: p.id,
+    deletedAt: now,
+  }));
+
+  await browser.storage.local.set({
+    [DELETE_KEY]: [...deletePrompts, ...newDeletePrompts],
+  });
+
+  // clear all prompts
   await browser.storage.local.set({ [KEY]: [] });
 }
 

@@ -19,13 +19,18 @@ export default function DeleteAllButton({ onChanged }: Props) {
     setTyped("");
   }
 
+  async function handleDelete() {
+    if (typed !== CONFIRM_TEXT) return;
+    await deleteAllPrompts();
+    close();
+    onChanged();
+  }
+
   // Press Enter only when the text matches exactly
   async function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Escape") close();
     if (e.key === "Enter" && typed === CONFIRM_TEXT) {
-      await deleteAllPrompts();
-      close();
-      onChanged();
+      await handleDelete();
     }
   }
 
@@ -46,7 +51,7 @@ export default function DeleteAllButton({ onChanged }: Props) {
           <p className="mt-1 text-xs text-on-surface-variant">
             This cannot be undone. Type{" "}
             <span className="font-semibold text-on-surface">{CONFIRM_TEXT}</span>{" "}
-            and press Enter.
+            and press Enter, or click Delete all below.
           </p>
           <input
             autoFocus
@@ -57,8 +62,15 @@ export default function DeleteAllButton({ onChanged }: Props) {
             className="w-full px-3 py-2 mt-3 text-sm rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline outline-none focus:border-error"
           />
           <button
+            onClick={handleDelete}
+            disabled={typed !== CONFIRM_TEXT}
+            className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-error text-on-error hover:opacity-90 disabled:opacity-40 cursor-pointer"
+          >
+            Delete all
+          </button>
+          <button
             onClick={close}
-            className="w-full py-2 mt-3 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
+            className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
           >
             Cancel
           </button>

@@ -130,6 +130,27 @@ async function uploadFile(
   });
 }
 
+// Delete the prompts file from the hidden app folder without changing local prompts.
+export async function resetCloud(): Promise<void> {
+  try {
+    const token = await getAccessToken();
+    const fileId = await findFile(token);
+
+    if (fileId) {
+      await drive(token, `${API}/drive/v3/files/${fileId}`, {
+        method: "DELETE",
+      });
+    }
+
+    await saveSyncSettings({ lastSyncedAt: 0, lastSyncError: null });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Cloud reset failed.";
+    await saveSyncSettings({ lastSyncError: message });
+    throw err;
+  }
+}
+
 // ================================
 // Main sync
 // ================================
