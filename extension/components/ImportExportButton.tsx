@@ -152,7 +152,22 @@ export default function ImportExportButton({ onChanged }: Props) {
                   : "Replace: delete your current prompts and use only the imported ones."}
               </p>
 
-              {error && <p className="mt-2 text-xs text-error">{error}</p>}
+              {error && (
+                <>
+                  <p className="mt-2 text-xs text-error">{error} </p>
+                  <div className="mt-2 text-xs text-on-surface-variant w-100 flex flex-col gap-1 justify-center items-center">
+                    <p>Validate Prompt Schema Json file with </p>
+                    <a
+                      href="https://save-prompt.qcial.com/schema"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline cursor-pointer border border-outline-variant rounded-lg px-2 py-1 text-xs font-medium mt-1 inline-block"
+                    >
+                      Save Prompt Schema Validator
+                    </a>
+                  </div>
+                </>
+              )}
 
               <div className="flex gap-2 mt-3">
                 <button
