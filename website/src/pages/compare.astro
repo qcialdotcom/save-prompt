@@ -1,0 +1,15 @@
+---
+// src/pages/compare.astro
+import Comparison from "@/components/comparison.astro";
+import Main from "@/layouts/main.astro";
+import { SITE_INFO } from "@/configs/site";
+---
+
+<Main
+  title={`Save Prompt vs. other prompt tools | ${SITE_INFO.name}`}
+  description="See how Save Prompt compares with ChatGPT memory, Notion and browser bookmarks for saving and reusing AI prompts."
+  url="/compare"
+  keywords={["prompt manager comparison", "Save Prompt vs Notion", "AI prompt organizer comparison"]}
+>
+  <Fragment slot="content"><Comparison /></Fragment>
+</Main>

@@ -39,3 +39,18 @@ export const FAQ_ROUTE: Route = {
   path: "/#faq",
   name: "FAQ",
 };
+
+export const COMPARE_ROUTE: Route = {
+  path: "/compare",
+  name: "Compare",
+};
+
+export const GUIDE_ROUTE: Route = {
+  path: "/guide",
+  name: "Guide",
+};
+
+export const PRIVACY_PAGE_ROUTE: Route = {
+  path: "/privacy",
+  name: "Privacy policy",
+};

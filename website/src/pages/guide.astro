@@ -1,0 +1,122 @@
+---
+// src/pages/guide.astro
+import { ArrowRight, BookmarkPlus, Clipboard, Search, Tags } from "@lucide/astro";
+import Main from "@/layouts/main.astro";
+import { GUIDE_CONTENT, GUIDE_STEPS } from "@/configs/content";
+import { DOWNLOAD_ROUTE } from "@/configs/routes";
+import { SITE_INFO } from "@/configs/site";
+const ICONS = { bookmark: BookmarkPlus, tags: Tags, search: Search, copy: Clipboard } as const;
+---
+
+<Main
+  title={`Prompt workflow guide | ${SITE_INFO.name}`}
+  description="Learn the complete workflow for saving, organizing, searching and reusing AI prompts with Save Prompt."
+  url="/guide"
+>
+  <Fragment slot="content">
+    <section class="relative overflow-hidden bg-surface-container-low py-16 sm:py-24">
+      <div class="mx-auto max-w-300 px-4 sm:px-6">
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">The simple workflow</p><h1
+            class="mt-4 text-balance text-4xl font-extrabold tracking-tight text-on-surface sm:text-6xl"
+          >
+            Turn scattered ideas into a <span class="text-primary">prompt library</span>
+          </h1><p class="mt-5 text-lg leading-relaxed text-on-surface-variant">{GUIDE_CONTENT.intro}</p>
+        </div>
+        <ol class="mx-auto mt-14 grid max-w-5xl gap-4 md:grid-cols-2">
+          {
+            GUIDE_STEPS.map(({ icon, number, title, text }) => {
+              const Icon = ICONS[icon];
+              return (
+                <li class="rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_8px_var(--color-shadow-soft)] sm:p-8">
+                  <>
+                    <div class="flex items-center justify-between">
+                      <>
+                        <span class="inline-flex size-12 items-center justify-center rounded-xl bg-primary text-on-primary">
+                          <Icon class="size-6" />
+                        </span>
+                        <span class="text-sm font-bold tracking-widest text-primary/60">{number}</span>
+                      </>
+                    </div>
+                    <h2 class="mt-6 text-xl font-bold text-on-surface">{title}</h2>
+                    <p class="mt-2 leading-relaxed text-on-surface-variant">{text}</p>
+                  </>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </section>
+    <section class="bg-surface py-16 sm:py-24">
+      <div class="mx-auto max-w-3xl space-y-12 px-4 sm:px-6">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">01 / Capture</p><h2
+            class="mt-3 text-3xl font-extrabold text-on-surface"
+          >
+            Save the context while it is fresh
+          </h2><p class="mt-4 text-base leading-relaxed text-on-surface-variant">{GUIDE_CONTENT.capture}</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">02 / Organize</p><h2
+            class="mt-3 text-3xl font-extrabold text-on-surface"
+          >
+            Use just enough structure
+          </h2><p class="mt-4 text-base leading-relaxed text-on-surface-variant">{GUIDE_CONTENT.organize}</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">03 / Retrieve</p><h2
+            class="mt-3 text-3xl font-extrabold text-on-surface"
+          >
+            Search by the problem you remember
+          </h2><p class="mt-4 text-base leading-relaxed text-on-surface-variant">{GUIDE_CONTENT.retrieve}</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">04 / Improve</p><h2
+            class="mt-3 text-3xl font-extrabold text-on-surface"
+          >
+            Let your library compound
+          </h2><p class="mt-4 text-base leading-relaxed text-on-surface-variant">{GUIDE_CONTENT.improve}</p>
+        </div>
+        <div class="rounded-2xl border border-primary/20 bg-primary/10 p-6 sm:p-8">
+          <h2 class="text-xl font-bold text-on-surface">Small habits that make a difference</h2><ul
+            class="mt-4 grid gap-3 sm:grid-cols-2"
+          >
+            {
+              GUIDE_CONTENT.habits.map((habit) => (
+                <li class="flex gap-2 text-sm leading-relaxed text-on-surface-variant">
+                  <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {habit}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-primary">Beyond the basics</p><h2
+            class="mt-3 text-3xl font-extrabold text-on-surface"
+          >
+            Build a library that gets smarter with you
+          </h2><div class="mt-6 space-y-8">
+            {
+              GUIDE_CONTENT.advanced.map((item) => (
+                <article>
+                  <>
+                    <h3 class="text-xl font-bold text-on-surface">{item.title}</h3>
+                    <p class="mt-2 text-base leading-relaxed text-on-surface-variant">{item.text}</p>
+                  </>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+        <div class="text-center">
+          <a
+            href={DOWNLOAD_ROUTE.path}
+            class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-semibold text-on-primary no-underline shadow-[0_8px_24px_var(--color-shadow-primary)] transition-opacity hover:opacity-90"
+            >Start building your library <ArrowRight class="size-4" /></a>
+        </div>
+      </div>
+    </section>
+  </Fragment>
+</Main>

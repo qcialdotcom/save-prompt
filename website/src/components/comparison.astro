@@ -1,0 +1,57 @@
+---
+// src/components/comparison.astro
+import { Check, Minus, ShieldCheck, Sparkles, X } from "@lucide/astro";
+import { COMPARISON_CONTENT, COMPARISON_ROWS, COMPARISON_VALUE_PROPS } from "@/configs/content";
+
+const ICONS = { sparkles: Sparkles, shield: ShieldCheck, check: Check } as const;
+---
+
+<section class="relative overflow-hidden border-b border-outline-variant/30 bg-surface-container-low py-16 sm:py-24">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-40 -top-40 size-120 rounded-full bg-primary/10 blur-3xl"></div>
+  <div class="relative z-10 mx-auto max-w-300 px-4 sm:px-6">
+    <div class="max-w-3xl">
+      <p class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary"><span aria-hidden="true" class="size-1.5 rounded-full bg-primary"></span>Make the switch</p>
+      <h1 class="mt-5 text-balance text-4xl font-extrabold tracking-tight text-on-surface sm:text-6xl">Your prompts deserve more than a <span class="text-primary">bookmark</span></h1>
+      <p class="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-on-surface-variant">{COMPARISON_CONTENT.intro}</p>
+    </div>
+    <div class="mt-12 grid gap-4 md:grid-cols-3">
+      {COMPARISON_VALUE_PROPS.map(({ icon, title, text }) => {
+        const Icon = ICONS[icon];
+        return <div class="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_2px_8px_var(--color-shadow-soft)]"><span class="inline-flex size-10 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed"><Icon class="size-5" /></span><h2 class="mt-4 text-lg font-semibold text-on-surface">{title}</h2><p class="mt-1 text-sm leading-relaxed text-on-surface-variant">{text}</p></div>;
+      })}
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="comparison-title" class="bg-surface py-16 sm:py-24">
+  <div class="mx-auto max-w-300 px-4 sm:px-6">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-wider text-primary">Why a dedicated library?</p>
+      <h2 id="comparison-title" class="mt-3 text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">Keep the prompt, not just the place you found it</h2>
+      <p class="mt-4 text-base leading-relaxed text-on-surface-variant sm:text-lg">{COMPARISON_CONTENT.whyDedicated}</p>
+    </div>
+    <div class="mt-12 overflow-x-auto rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_30px_var(--color-shadow-soft)]">
+      <table class="w-full min-w-190 border-collapse text-left">
+        <thead><tr class="border-b border-outline-variant bg-surface-container-low"><th class="p-4 text-sm font-semibold text-on-surface sm:p-5">Capability</th><th class="bg-primary/10 p-4 text-sm font-bold text-primary sm:p-5">Save Prompt</th><th class="p-4 text-sm font-semibold text-on-surface-variant sm:p-5">ChatGPT memory</th><th class="p-4 text-sm font-semibold text-on-surface-variant sm:p-5">Notion</th><th class="p-4 text-sm font-semibold text-on-surface-variant sm:p-5">Bookmarks</th></tr></thead>
+        <tbody>
+          {COMPARISON_ROWS.map((row) => <tr class="border-b border-outline-variant/60 last:border-0"><th scope="row" class="p-4 text-sm font-medium text-on-surface sm:p-5">{row.feature}</th>{[row.savePrompt, row.chat, row.notion, row.bookmarks].map((value, index) => <td class:list={["p-4 sm:p-5", index === 0 && "bg-primary/5"]}>{value === true && <Check class="size-5 text-tertiary" aria-label="Yes" />}{value === false && <X class="size-5 text-on-surface-variant/50" aria-label="No" />}{value === "partial" && <Minus class="size-5 text-window-yellow" aria-label="Partially supported" />}</td>)}</tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-xs leading-relaxed text-on-surface-variant">{COMPARISON_CONTENT.note}</p>
+  </div>
+</section>
+
+<section class="border-t border-outline-variant/30 bg-surface-container-low py-16 sm:py-24">
+  <div class="mx-auto grid max-w-300 gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:items-start">
+    <div><p class="text-sm font-semibold uppercase tracking-wider text-primary">Choose with confidence</p><h2 class="mt-3 text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">A focused tool for a focused job</h2></div>
+    <div class="space-y-5 text-base leading-relaxed text-on-surface-variant"><p>{COMPARISON_CONTENT.workflow}</p><p>{COMPARISON_CONTENT.choosing}</p></div>
+  </div>
+</section>
+
+<section class="bg-surface py-16 sm:py-24">
+  <div class="mx-auto max-w-300 px-4 sm:px-6">
+    <div class="mx-auto max-w-3xl text-center"><p class="text-sm font-semibold uppercase tracking-wider text-primary">The details matter</p><h2 class="mt-3 text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">How the tools feel in everyday use</h2></div>
+    <div class="mt-10 grid gap-5 md:grid-cols-3">{COMPARISON_CONTENT.details.map((detail) => <article class="rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_8px_var(--color-shadow-soft)]"><h3 class="text-xl font-bold text-on-surface">{detail.title}</h3><p class="mt-3 text-sm leading-relaxed text-on-surface-variant">{detail.text}</p></article>)}</div>
+  </div>
+</section>
