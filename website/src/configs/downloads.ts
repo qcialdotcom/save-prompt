@@ -25,7 +25,7 @@ export const EXTENSION_DOWNLOADS: DownloadTarget[] = [
     icon: "globe",
     description: "Also works on Edge, Brave and other Chromium browsers.",
     buttonLabel: "Add to Chrome",
-    href: null, // https://chrome.google.com/webstore/...
+    href: "https://chromewebstore.google.com/detail/eiipdkicmhleciiobbbcijfjgphboocd?utm_source=save-prompt.qcial.com",
     commandLabel: "Store link",
     command: null,
   },
