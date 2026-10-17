@@ -54,3 +54,8 @@ export const PRIVACY_PAGE_ROUTE: Route = {
   path: "/privacy",
   name: "Privacy policy",
 };
+
+export const SCHEMA_ROUTE: Route = {
+  path: "/schema",
+  name: "JSON schema",
+};

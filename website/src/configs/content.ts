@@ -474,6 +474,10 @@ export const GUIDE_CONTENT: GuideContent = {
       text: "Merge keeps current prompts and adds or updates imported prompts by ID. Replace clears the current list and uses only the valid prompts in the selected JSON file.",
     },
     {
+      title: "Create a valid JSON file",
+      text: "If you create a prompts.json file yourself, use the exact object structure required by the extension. The JSON schema page lists the required fields, accepted types, and common validation errors before you import the file.",
+    },
+    {
       title: "Use sync only when needed",
       text: "Google Drive sync is optional. Sign in with Google from the sync control, then run a sync or enable background sync in the sync settings.",
     },
@@ -486,7 +490,7 @@ export const GUIDE_CONTENT: GuideContent = {
 
 export const PRIVACY_PAGE_CONTENT: PrivacyPageContent = {
   intro:
-    "Save Prompt stores prompts in the browser by default. The local library does not require an account. Google Drive sync is a separate, optional feature that requires signing in with Google.",
+    "Save Prompt stores prompts in the browser by default. We do not collect, share, or sell your prompt data. The local library does not require an account. Google Drive sync is a separate, optional feature that requires signing in with Google.",
   sections: [
     {
       title: "Browser storage",
@@ -498,11 +502,15 @@ export const PRIVACY_PAGE_CONTENT: PrivacyPageContent = {
     },
     {
       title: "Google Drive sync",
-      text: "When sync is used, the extension accesses a prompts.json file in Google Drive's hidden application folder. The sync flow downloads the cloud prompts, merges them with local prompts, and uploads the merged list.",
+      text: "When sync is used, the extension accesses a prompts.json file in Google Drive's hidden application folder. The sync flow downloads the cloud prompts, merges them with local prompts, and uploads the merged list. Google Drive's own privacy policy and terms apply to data stored there.",
     },
     {
       title: "JSON files",
       text: "Export downloads the local prompt list as JSON. Imported files are validated before they are merged or used to replace the current local list.",
+    },
+    {
+      title: "No collection, sharing, or sale",
+      text: "Save Prompt does not collect your prompt data, share it with third parties, or sell it. If you choose Google Drive sync, the synced copy is handled through your Google account and is subject to Google's policies.",
     },
     {
       title: "Delete controls",
@@ -514,6 +522,7 @@ export const PRIVACY_PAGE_CONTENT: PrivacyPageContent = {
     "No account is required for local prompts.",
     "Google Drive sync requires Google sign-in.",
     "JSON export creates a portable copy.",
+    "Save Prompt does not collect, share, or sell prompt data.",
     "Individual and delete-all controls are available.",
   ],
   principles: [

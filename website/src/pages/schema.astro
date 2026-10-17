@@ -1,0 +1,354 @@
+---
+import { ArrowRight, FileJson } from "@lucide/astro";
+import Main from "@/layouts/main.astro";
+import { GUIDE_ROUTE } from "@/configs/routes";
+import { SITE_INFO } from "@/configs/site";
+
+const example = `[
+  {
+    "id": "prompt-id",
+    "title": "Example prompt",
+    "content": "Write a concise summary of the text below.",
+    "tags": ["writing", "summary"],
+    "isFavorite": false,
+    "createdAt": 1728000000000,
+    "updatedAt": 1728000000000
+  }
+]`;
+
+const fields = [
+  ["id", "string", "Unique within the file"],
+  ["title", "string", "The prompt title"],
+  ["content", "string", "The prompt text"],
+  ["tags", "string[]", "Array of strings, can be empty"],
+  ["isFavorite", "boolean", "true or false"],
+  ["createdAt", "number", "Finite number in milliseconds"],
+  ["updatedAt", "number", "Finite number in milliseconds"],
+];
+---
+
+<Main
+  title={`JSON schema | ${SITE_INFO.name}`}
+  description={`Check JSON files before importing prompts into ${SITE_INFO.name}.`}
+  url="/schema"
+>
+  <Fragment slot="content">
+    <section class="bg-surface-container-low px-4 py-14">
+      <div class="mx-auto max-w-3xl">
+        <div class="text-center pt-5">
+          <span class="inline-flex size-12 items-center justify-center rounded-2xl bg-primary text-on-primary">
+            <FileJson class="size-7" />
+          </span>
+          <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-on-surface">Check your prompt JSON</h1>
+          <p class="mt-3 text-on-surface-variant">Paste your JSON to see if it can be imported and where any problem is.</p>
+        </div>
+
+        <div class="mt-10 rounded-3xl border border-outline-variant bg-surface-container-lowest p-6">
+          <h2 class="text-xl font-bold text-on-surface">Test an import file</h2>
+          <p class="mt-1 text-sm text-on-surface-variant">Runs in your browser. Nothing is uploaded.</p>
+          <textarea
+            id="json-input"
+            rows="12"
+            spellcheck="false"
+            class="mt-4 block w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3 font-mono text-sm text-on-surface outline-none focus:border-primary"
+            placeholder="Paste a JSON array here...">{example}</textarea
+          >
+          <div class="mt-4 flex gap-3">
+            <button
+              id="validate-json"
+              type="button"
+              class="min-h-11 rounded-full bg-primary px-5 font-semibold text-on-primary hover:opacity-90 cursor-pointer"
+              >Validate JSON</button
+            >
+            <button
+              id="clear-json"
+              type="button"
+              class="min-h-11 rounded-full border border-outline-variant px-5 font-semibold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+              >Clear</button
+            >
+          </div>
+          <div id="validation-result" class="hidden" role="status"></div>
+        </div>
+
+        <div class="mt-6 rounded-3xl bg-inverse-surface p-6 text-inverse-on-surface">
+          <h2 class="text-xl font-bold">Valid example</h2>
+          <pre class="mt-4 overflow-x-auto text-sm"><code>{example}</code></pre>
+        </div>
+
+        <div class="mt-6 rounded-3xl border border-outline-variant bg-surface-container-lowest p-6">
+          <h2 class="text-xl font-bold text-on-surface">Required fields</h2>
+          <p class="mt-1 text-sm text-on-surface-variant">
+            Every item needs exactly these seven fields. Extra fields are rejected.
+          </p>
+          <ul class="mt-4">
+            {
+              fields.map(([name, type, note]) => (
+                <li class="flex items-center justify-between gap-4 border-b border-outline-variant py-3 last:border-b-0">
+                  <div>
+                    <span class="font-mono font-semibold text-on-surface">{name}</span>
+                    <span class="ml-2 text-sm text-on-surface-variant">{note}</span>
+                  </div>
+                  <span class="rounded-full bg-primary-fixed px-2 py-1 font-mono text-xs text-on-primary-fixed">{type}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="mt-8 text-center pb-5">
+          <a
+            href={GUIDE_ROUTE.path}
+            class="inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-6 font-semibold text-on-primary no-underline hover:opacity-90"
+          >
+            Read the import guide <ArrowRight class="size-4" />
+          </a>
+        </div>
+      </div>
+    </section>
+  </Fragment>
+</Main>
+
+<script>
+  const input = document.querySelector<HTMLTextAreaElement>("#json-input");
+  const result = document.querySelector<HTMLDivElement>("#validation-result");
+
+  const fields: Record<string, string> = {
+    id: "string",
+    title: "string",
+    content: "string",
+    tags: "array",
+    isFavorite: "boolean",
+    createdAt: "number",
+    updatedAt: "number",
+  };
+  const names = Object.keys(fields);
+
+  // Friendly names for the expected types
+  const expectedLabel: Record<string, string> = {
+    string: "text (in double quotes)",
+    array: 'a list like ["a", "b"]',
+    boolean: "true or false (no quotes)",
+    number: "a number (no quotes)",
+  };
+
+  type Group = { title: string; lines: string[] };
+
+  const okClass = "mt-4 rounded-2xl border border-tertiary bg-tertiary/15 p-4 text-sm text-tertiary";
+  const errorClass = "mt-4 rounded-2xl border border-error bg-error/10 p-4 text-sm text-red-700";
+
+  function show(valid: boolean, heading: string, groups: Group[]) {
+    if (!result) return;
+    result.className = valid ? okClass : errorClass;
+    result.replaceChildren();
+
+    const title = document.createElement("strong");
+    title.textContent = heading;
+    result.append(title);
+
+    const list = document.createElement("ul");
+    list.className = "mt-2 space-y-3";
+
+    groups.slice(0, 20).forEach((group) => {
+      const item = document.createElement("li");
+      if (group.title) {
+        const name = document.createElement("div");
+        name.className = "font-semibold";
+        name.textContent = group.title;
+        item.append(name);
+      }
+      const sub = document.createElement("ul");
+      sub.className = "mt-1 list-disc space-y-1 pl-5";
+      group.lines.forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        sub.append(li);
+      });
+      item.append(sub);
+      list.append(item);
+    });
+
+    if (groups.length > 20) {
+      const more = document.createElement("li");
+      more.textContent = `...and ${groups.length - 20} more prompt(s) with problems.`;
+      list.append(more);
+    }
+
+    result.append(list);
+  }
+
+  // Describe the real type of a value in plain words
+  function describe(value: unknown): string {
+    if (value === null) return "empty (null)";
+    if (Array.isArray(value)) return "a list";
+    switch (typeof value) {
+      case "string":
+        return "text";
+      case "number":
+        return "a number";
+      case "boolean":
+        return "true/false";
+      case "object":
+        return "an object";
+      default:
+        return typeof value;
+    }
+  }
+
+  // Turn browser JSON errors into friendly sentences
+  function explainSyntaxError(text: string, error: unknown): string[] {
+    const raw = error instanceof SyntaxError ? error.message : "Invalid JSON.";
+    let line = 0;
+    let column = 0;
+
+    const lc = raw.match(/line (\d+) column (\d+)/i);
+    const pos = raw.match(/position (\d+)/i);
+    if (lc) {
+      line = Number(lc[1]);
+      column = Number(lc[2]);
+    } else if (pos) {
+      const before = text.slice(0, Number(pos[1]));
+      line = before.split("\n").length;
+      column = before.length - before.lastIndexOf("\n");
+    }
+
+    let hint = "There is a typo in the JSON near this spot.";
+    if (/double-quoted property name/i.test(raw)) {
+      hint = 'Remove the extra comma after the last field, or put the field name in double quotes ("like this").';
+    } else if (/unexpected end/i.test(raw)) {
+      hint = "The JSON looks incomplete. A closing ] or } is probably missing at the end.";
+    } else if (/after property value|after array element|expected ','/i.test(raw)) {
+      hint = "A comma is missing between two fields or two items.";
+    } else if (/expected property name|expected ':'/i.test(raw)) {
+      hint = "A field name or a colon (:) is missing or misplaced.";
+    } else if (/unexpected token|unexpected character|not valid json/i.test(raw)) {
+      hint =
+        "An unexpected character was found. Check for single quotes (use double quotes), a missing quote, or text outside the JSON.";
+    } else if (/unterminated string|bad control character/i.test(raw)) {
+      hint = "A text value is missing its closing quote, or has a line break inside it.";
+    }
+
+    const where = line ? `Line ${line}, column ${column}: ` : "";
+    const sourceLine = line ? text.split("\n")[line - 1]?.trim() : "";
+    const lines = [`${where}${hint}`];
+    if (sourceLine) lines.push(`Near: ${sourceLine.slice(0, 80)}`);
+    return lines;
+  }
+
+  function validate() {
+    if (!input) return;
+
+    if (!input.value.trim()) {
+      show(false, "Nothing to check", [{ title: "", lines: ["Paste your JSON into the box first."] }]);
+      return;
+    }
+
+    let data: unknown;
+    try {
+      data = JSON.parse(input.value);
+    } catch (error) {
+      show(false, "The JSON is not written correctly", [{ title: "", lines: explainSyntaxError(input.value, error) }]);
+      return;
+    }
+
+    if (!Array.isArray(data)) {
+      show(false, "Import cannot continue", [
+        {
+          title: "",
+          lines: ["The file must start with [ and end with ] (a list of prompts). Right now it is " + describe(data) + "."],
+        },
+      ]);
+      return;
+    }
+
+    if (data.length === 0) {
+      show(false, "Import cannot continue", [{ title: "", lines: ["The list is empty. Add at least one prompt."] }]);
+      return;
+    }
+
+    const groups: Group[] = [];
+    const ids = new Set<string>();
+
+    data.forEach((item, index) => {
+      const lines: string[] = [];
+      let label = `Prompt ${index + 1}`;
+
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        groups.push({ title: label, lines: [`This must be an object { ... } with 7 fields, but it is ${describe(item)}.`] });
+        return;
+      }
+
+      const record = item as Record<string, unknown>;
+      if (typeof record.title === "string" && record.title.trim()) {
+        label += ` ("${record.title.trim().slice(0, 40)}")`;
+      }
+
+      // Missing fields
+      const missing = names.filter((name) => !(name in record));
+      if (missing.length) {
+        lines.push(`Missing field${missing.length > 1 ? "s" : ""}: ${missing.join(", ")}`);
+      }
+
+      // Extra fields
+      const extra = Object.keys(record).filter((key) => !names.includes(key));
+      if (extra.length) {
+        lines.push(
+          `Not allowed field${extra.length > 1 ? "s" : ""}: ${extra.join(", ")} (remove ${extra.length > 1 ? "them" : "it"})`,
+        );
+      }
+
+      // Wrong types
+      names.forEach((name) => {
+        if (!(name in record)) return;
+        const value = record[name];
+        const expected = fields[name];
+        const ok = expected === "array" ? Array.isArray(value) : typeof value === expected;
+
+        if (!ok) {
+          lines.push(`"${name}" has the wrong type. Expected ${expectedLabel[expected]}, but found ${describe(value)}.`);
+          return;
+        }
+
+        if (name === "tags") {
+          const bad = (value as unknown[]).findIndex((tag) => typeof tag !== "string");
+          if (bad !== -1) {
+            lines.push(`"tags" item ${bad + 1} must be text, but found ${describe((value as unknown[])[bad])}.`);
+          }
+        }
+
+        if ((name === "createdAt" || name === "updatedAt") && !Number.isFinite(value)) {
+          lines.push(`"${name}" must be a finite number (milliseconds), not NaN or Infinity.`);
+        }
+      });
+
+      // Duplicate ids
+      if (typeof record.id === "string") {
+        if (ids.has(record.id)) {
+          lines.push(`"id" "${record.id}" is already used by another prompt. Each id must be unique.`);
+        }
+        ids.add(record.id);
+      }
+
+      if (lines.length) groups.push({ title: label, lines });
+    });
+
+    if (groups.length) {
+      show(
+        false,
+        `Import cannot continue: ${groups.length} of ${data.length} prompt${data.length === 1 ? "" : "s"} ${
+          groups.length === 1 ? "has" : "have"
+        } problems`,
+        groups,
+      );
+    } else {
+      show(true, "Valid JSON file", [
+        { title: "", lines: [`${data.length} prompt${data.length === 1 ? "" : "s"} ready to import.`] },
+      ]);
+    }
+  }
+
+  document.querySelector("#validate-json")?.addEventListener("click", validate);
+  document.querySelector("#clear-json")?.addEventListener("click", () => {
+    if (input) input.value = "";
+    if (result) result.className = "hidden";
+  });
+</script>
