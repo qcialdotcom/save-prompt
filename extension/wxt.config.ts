@@ -1,25 +1,22 @@
-// wxt.config.ts
-
 import { defineConfig } from "wxt";
 import tailwindcss from "@tailwindcss/vite";
 import { loadEnv } from "vite";
 
-// Keep the Chrome extension ID stable across development builds. This is the
-// public half of the extension key and is safe to include in the manifest.
-const CHROME_EXTENSION_KEY =
-  "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAogwYsICavw9UjWvWz73X6JQ5iNjK3I6aRU3Tr9TBNoJqDKurs8hmwOE7HslGO6268FQAzQbxdiHxjYhrKYLQh2l2l0f3bw4qk1Dr5oF0i3BdrEXLTO0y8ssYhWSj8JXWIfKKXXNjcummLcxGT7vYiqCxwcAvekmI3jLJHcjr/dQQGuvoSwvNzHS6iOMRX+SeGYRk8JSd72O8Rre8VSRGcmkFMb6JpNzNc/xRge1MTSqsKJuDvpCIyS9pC+ZUbwPqgc9zTd22kcNVUmCbY5DSzdix+SpCrURAizF+eXxNchMyOZ9mxrK+v3/FEN5Z9fvcXSr2g+XpH4INYSa/gpU//wIDAQAB";
+// Stable Chrome extension ID.
+const CHROME_EXTENSION_KEY = loadEnv(
+  process.env.NODE_ENV ?? "development",
+  process.cwd(),
+  "WXT_CHROME_EXTENSION_KEY",
+).WXT_CHROME_EXTENSION_KEY;
 
-// WXT does not copy .env values into process.env before this file runs, so
-// load them explicitly. Real environment variables (CI) still take priority.
+// Load WXT-prefixed environment variables.
 const env = loadEnv(
   process.env.NODE_ENV ?? "development",
   process.cwd(),
   "WXT_",
 );
 
-// Google OAuth client ID. Chrome reads it from the manifest as a fallback;
-// Firefox ignores the `oauth2` manifest key, so lib/auth.ts reads the
-// client ID from .env at build time instead.
+// Google OAuth client ID.
 const GOOGLE_CLIENT_ID =
   process.env.WXT_GOOGLE_CLIENT_ID ?? env.WXT_GOOGLE_CLIENT_ID;
 
@@ -52,7 +49,10 @@ export default defineConfig({
     ...(browser === "chrome" && {
       key: CHROME_EXTENSION_KEY,
       ...(GOOGLE_CLIENT_ID && {
-        oauth2: { client_id: GOOGLE_CLIENT_ID, scopes: GOOGLE_SCOPES },
+        oauth2: {
+          client_id: GOOGLE_CLIENT_ID,
+          scopes: GOOGLE_SCOPES,
+        },
       }),
     }),
     ...(browser === "firefox" && {
