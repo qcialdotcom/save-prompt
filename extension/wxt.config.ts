@@ -9,6 +9,13 @@ const CHROME_EXTENSION_KEY = loadEnv(
   "WXT_CHROME_EXTENSION_KEY",
 ).WXT_CHROME_EXTENSION_KEY;
 
+// Stable Firefox extension ID.
+const FIREFOX_EXTENSION_ID = loadEnv(
+  process.env.NODE_ENV ?? "development",
+  process.cwd(),
+  "WXT_FIREFOX_EXTENSION_ID",
+).WXT_FIREFOX_EXTENSION_ID;
+
 // Load WXT-prefixed environment variables.
 const env = loadEnv(
   process.env.NODE_ENV ?? "development",
@@ -58,7 +65,7 @@ export default defineConfig({
     ...(browser === "firefox" && {
       browser_specific_settings: {
         gecko: {
-          id: "save-prompt@qcial.com",
+          id: FIREFOX_EXTENSION_ID,
           strict_min_version: "140.0",
           data_collection_permissions: {
             required: ["none"],
