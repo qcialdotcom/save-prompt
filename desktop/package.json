@@ -6,7 +6,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev:react": "vite",
-    "dev:electron": "npm run build && electron .",
+    "dev:electron": "npm run build && electron . --ozone-platform=x11",
     "build": "tsc -b && tsc -p tsconfig.electron.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
