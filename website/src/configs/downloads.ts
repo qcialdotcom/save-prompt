@@ -35,7 +35,7 @@ export const EXTENSION_DOWNLOADS: DownloadTarget[] = [
     icon: "flame",
     description: "Install from Firefox Add-ons in one click.",
     buttonLabel: "Add to Firefox",
-    href: null, // https://addons.mozilla.org/en-US/firefox/...
+    href: "https://addons.mozilla.org/en-US/firefox/addon/save-prompt/?utm_source=save-prompt.qcial.com",
     commandLabel: "Store link",
     command: null,
   },
