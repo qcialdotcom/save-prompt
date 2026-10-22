@@ -1,4 +1,4 @@
-// config/site.ts
+// config/app.ts
 
 import logo from "../assets/logo.webp";
 
