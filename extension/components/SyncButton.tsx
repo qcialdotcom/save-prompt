@@ -208,56 +208,56 @@ export default function SyncButton({ onChanged }: Props) {
                 </h2>
 
                 {!loggedIn ? (
-              // Not logged in: ask for login
-              <>
-                <p className="mt-1 text-xs text-on-surface-variant">
-                  Sign in with Google to sync your prompts with Google Drive.
-                  They are stored in a hidden app folder that only this
-                  extension can open.
-                </p>
-                <button
-                  onClick={handleLogin}
-                  disabled={busy}
-                  className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 cursor-pointer"
-                >
-                  {busy ? "Waiting for Google..." : "Sign in with Google"}
-                </button>
-              </>
-            ) : (
-              // Logged in: sync now
-              <>
-                <p className="mt-1 text-xs text-on-surface-variant">
-                  Last synced:{" "}
-                  {settings.lastSyncedAt
-                    ? new Date(settings.lastSyncedAt).toLocaleString()
-                    : "never"}
-                </p>
-                {!settings.isEnabled && (
-                  <p className="mt-1 text-xs text-on-surface-variant">
-                    Cloud sync is turned off in Settings.
-                  </p>
-                )}
-                <button
-                  onClick={handleSync}
-                  disabled={busy || !settings.isEnabled}
-                  className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 cursor-pointer"
-                >
-                  {busy ? "Syncing..." : "Sync now"}
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
-                >
-                  Sign out
-                </button>
-                <button
-                  onClick={() => setResetOpen(true)}
-                  disabled={busy}
-                  className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-error text-error hover:bg-error-container disabled:opacity-40 cursor-pointer"
-                >
-                  Reset cloud
-                </button>
-              </>
+                  // Not logged in: ask for login
+                  <>
+                    <p className="mt-1 text-xs text-on-surface-variant">
+                      Sign in with Google to sync your prompts with Google
+                      Drive. They are stored in a hidden app folder that only
+                      this extension can open.
+                    </p>
+                    <button
+                      onClick={handleLogin}
+                      disabled={busy}
+                      className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 cursor-pointer"
+                    >
+                      {busy ? "Waiting for Google..." : "Sign in with Google"}
+                    </button>
+                  </>
+                ) : (
+                  // Logged in: sync now
+                  <>
+                    <p className="mt-1 text-xs text-on-surface-variant">
+                      Last synced:{" "}
+                      {settings.lastSyncedAt
+                        ? new Date(settings.lastSyncedAt).toLocaleString()
+                        : "never"}
+                    </p>
+                    {!settings.isEnabled && (
+                      <p className="mt-1 text-xs text-on-surface-variant">
+                        Cloud sync is turned off in Settings.
+                      </p>
+                    )}
+                    <button
+                      onClick={handleSync}
+                      disabled={busy || !settings.isEnabled}
+                      className="w-full py-2 mt-3 text-sm font-medium rounded-lg bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 cursor-pointer"
+                    >
+                      {busy ? "Syncing..." : "Sync now"}
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer"
+                    >
+                      Sign out
+                    </button>
+                    <button
+                      onClick={() => setResetOpen(true)}
+                      disabled={busy}
+                      className="w-full py-2 mt-2 text-sm font-medium rounded-lg border border-error text-error hover:bg-error-container disabled:opacity-40 cursor-pointer"
+                    >
+                      Reset cloud
+                    </button>
+                  </>
                 )}
 
                 {(error || settings.lastSyncError) && (

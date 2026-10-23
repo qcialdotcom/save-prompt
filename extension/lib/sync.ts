@@ -17,6 +17,15 @@ const SETTINGS_KEY = "syncSettings";
 const FILE_NAME = "prompts.json";
 export const SYNC_ALARM = "save-prompt-sync";
 
+export const INTERVALS = [
+  { secs: 60, label: "Every minute" },
+  { secs: 300, label: "Every 5 minutes" },
+  { secs: 900, label: "Every 15 minutes" },
+  { secs: 1800, label: "Every 30 minutes" },
+  { secs: 3600, label: "Every hour" },
+];
+
+
 // Default settings for new users.
 const defaultSettings: SyncSettings = {
   isEnabled: false,

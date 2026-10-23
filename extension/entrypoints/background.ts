@@ -25,9 +25,16 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type !== "login") return;
 
-    // Log in, enable sync, and schedule the next sync.
+    // when the user clicks "Login with Google" in the popup, log them in and enable background sync.
     login()
-      .then(() => saveSyncSettings({ isEnabled: true, lastSyncError: null }))
+      .then(() =>
+        saveSyncSettings({
+          isEnabled: true,
+          runInBackground: true,
+          syncIntervalInSecs: 300,
+          lastSyncError: null,
+        }),
+      )
       .then(scheduleSync)
       .then(() => sendResponse({ ok: true }))
       .catch((err) => sendResponse({ error: err.message }));

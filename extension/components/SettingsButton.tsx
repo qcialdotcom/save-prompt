@@ -11,18 +11,11 @@ import {
 } from "@/lib/prompts";
 import {
   getSyncSettings,
+  INTERVALS,
   saveSyncSettings,
   scheduleSync,
   type SyncSettings,
 } from "@/lib/sync";
-
-const INTERVALS = [
-  { secs: 60, label: "Every minute" },
-  { secs: 300, label: "Every 5 minutes" },
-  { secs: 900, label: "Every 15 minutes" },
-  { secs: 1800, label: "Every 30 minutes" },
-  { secs: 3600, label: "Every hour" },
-];
 
 type ErrorTarget = "sync" | "background";
 
