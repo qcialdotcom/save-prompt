@@ -24,9 +24,11 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "electron-updater": "^6.8.11",
+    "fuse.js": "^7.5.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
