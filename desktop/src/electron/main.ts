@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
-import path from "path";
+import path from "node:path";
+import { checkForUpdates } from "./update.js";
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -16,4 +17,7 @@ const createWindow = () => {
   win.loadFile(path.join(app.getAppPath(), "dist-react", "index.html"));
 };
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  void checkForUpdates();
+});

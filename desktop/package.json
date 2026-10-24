@@ -11,8 +11,19 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "build": {
+    "appId": "com.qcial.saveprompt",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "qcialdotcom",
+        "repo": "save-prompt"
+      }
+    ]
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "electron-updater": "^6.8.11",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwindcss": "^4.3.3"
@@ -24,6 +35,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
