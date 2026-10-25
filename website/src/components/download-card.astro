@@ -1,7 +1,7 @@
 ---
 // src/components/download-card.astro
 import type { DownloadTarget } from "@/configs/downloads";
-import { ArrowUpRight, Check, Clock, Copy, Download, Flame, Globe, Laptop, Monitor, Terminal } from "@lucide/astro";
+import { ArrowUpRight, Check, Clock, Copy, Download, Flame, Globe, Info, Laptop, Monitor, Terminal } from "@lucide/astro";
 
 interface Props {
   target: DownloadTarget;
@@ -38,7 +38,36 @@ const comingSoon = !hasLink && !hasCommand;
       <Icon class="size-5" />
     </span>
     <div class="min-w-0">
-      <h4 class="text-lg font-semibold text-on-surface">{target.name}</h4>
+      <div class="flex items-center gap-2">
+        <h4 class="text-lg font-semibold text-on-surface">{target.name}</h4>
+        {
+          target.shortcutInstructions && (
+            <span class="group/tip relative inline-flex">
+              <span
+                tabindex="0"
+                role="button"
+                aria-label={`Show ${target.name} keyboard shortcut instructions`}
+                aria-describedby={`shortcut-tip-${target.id}`}
+                class="inline-flex size-6 cursor-help items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Info class="size-4" />
+              </span>
+              <span
+                id={`shortcut-tip-${target.id}`}
+                role="tooltip"
+                class="pointer-events-none absolute left-0 top-full z-20 mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-xl border border-outline-variant bg-inverse-surface p-4 text-left text-xs text-inverse-on-surface opacity-0 shadow-lg transition-opacity duration-200 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+              >
+                <strong class="font-semibold">Set a keyboard shortcut</strong>
+                <ol class="mt-2 list-decimal space-y-1 pl-4">
+                  {target.shortcutInstructions.map((instruction) => (
+                    <li>{instruction}</li>
+                  ))}
+                </ol>
+              </span>
+            </span>
+          )
+        }
+      </div>
       <p class="mt-0.5 text-sm text-on-surface-variant">{target.description}</p>
     </div>
   </div>
