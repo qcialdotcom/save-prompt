@@ -12,6 +12,15 @@
   },
   "build": {
     "appId": "com.qcial.saveprompt",
+    "linux": {
+      "icon": "assets/icon.png"
+    },
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "icon": "assets/icon.icns"
+    },
     "publish": [
       {
         "provider": "github",
@@ -22,6 +31,7 @@
     "files": [
       "dist-electron/**/*",
       "dist-react/**/*",
+      "assets/**/*",
       "package.json"
     ]
   },

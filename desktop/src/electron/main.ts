@@ -7,6 +7,7 @@ import { startScheduler, stopScheduler } from "../lib/sync.js";
 import { checkForUpdates } from "./update.js";
 
 const indexPath = path.join(app.getAppPath(), "dist-react", "index.html");
+const iconPath = path.join(app.getAppPath(), "assets", "icon.png");
 
 function openExternal(url: string): void {
   // Open only HTTPS links in the user's default browser.
@@ -27,6 +28,7 @@ const createWindow = () => {
     frame: true,
     show: false,
     title: "Save Prompt",
+    icon: iconPath,
     webPreferences: {
       // Load the preload script that safely connects the UI to Electron.
       preload: path.join(import.meta.dirname, "preload.cjs"),
