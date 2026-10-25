@@ -23,3 +23,8 @@ dist-electron
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets
+.env
+.env.*
+!.env.example

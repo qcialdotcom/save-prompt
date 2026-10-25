@@ -3,13 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/electron/main.js",
   "scripts": {
-    "dev:react": "vite",
-    "dev:electron": "npm run build && electron . --ozone-platform=x11",
-    "build": "tsc -b && tsc -p tsconfig.electron.json && vite build",
+    "dev": "npm run build && electron . --ozone-platform=x11",
+    "build": "tsc -b && tsc -p tsconfig.electron.json && node scripts/write-oauth-config.mjs && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "dist": "npm run build && electron-builder"
   },
   "build": {
     "appId": "com.qcial.saveprompt",
@@ -19,6 +18,11 @@
         "owner": "qcialdotcom",
         "repo": "save-prompt"
       }
+    ],
+    "files": [
+      "dist-electron/**/*",
+      "dist-react/**/*",
+      "package.json"
     ]
   },
   "dependencies": {
