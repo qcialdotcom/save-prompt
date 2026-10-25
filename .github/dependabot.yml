@@ -1,0 +1,69 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "website"]
+    commit-message:
+      prefix: "chore(website)"
+    groups:
+      website-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      website-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/desktop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "desktop"]
+    commit-message:
+      prefix: "chore(desktop)"
+    groups:
+      desktop-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      desktop-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "bun"
+    directory: "/extension"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "extension"]
+    commit-message:
+      prefix: "chore(extension)"
+    groups:
+      extension-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      extension-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions:
+        patterns: ["*"]
