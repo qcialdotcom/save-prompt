@@ -12,15 +12,6 @@
   },
   "build": {
     "appId": "com.qcial.saveprompt",
-    "linux": {
-      "icon": "assets/icon.png"
-    },
-    "win": {
-      "icon": "assets/icon.ico"
-    },
-    "mac": {
-      "icon": "assets/icon.icns"
-    },
     "publish": [
       {
         "provider": "github",
@@ -33,7 +24,40 @@
       "dist-react/**/*",
       "assets/**/*",
       "package.json"
-    ]
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    },
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
+    }
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
