@@ -6,6 +6,8 @@ browser.
 This repository contains:
 
 - [`extension/`](./extension/) - the WXT and React browser extension.
+- [`desktop/`](./desktop/) - the Electron desktop application for local
+  prompt management and optional Google Drive sync.
 - [`website/`](./website/) - the Astro website for Save Prompt.
 
 ## Getting started
@@ -20,6 +22,17 @@ bun run dev
 
 See the [extension README](./extension/README.md) for browser setup, production
 builds, and packaging commands.
+
+### Desktop app
+
+```bash
+cd desktop
+npm install
+npm run dev
+```
+
+See the [desktop README](./desktop/README.md) for environment configuration,
+available commands, desktop features, and packaging instructions.
 
 ### Website
 
