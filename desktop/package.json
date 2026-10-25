@@ -1,0 +1,53 @@
+{
+  "name": "save-prompt",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist-electron/electron/main.js",
+  "scripts": {
+    "dev": "npm run build && electron . --ozone-platform=x11",
+    "build": "tsc -b && tsc -p tsconfig.electron.json && node scripts/write-oauth-config.mjs && vite build",
+    "lint": "eslint .",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.qcial.saveprompt",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "qcialdotcom",
+        "repo": "save-prompt"
+      }
+    ],
+    "files": [
+      "dist-electron/**/*",
+      "dist-react/**/*",
+      "package.json"
+    ]
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "electron-updater": "^6.8.11",
+    "fuse.js": "^7.5.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4"
+  }
+}
