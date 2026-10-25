@@ -202,7 +202,7 @@ export const ROADMAP: RoadmapItem[] = [
     items: ["Google Drive sync", "Conflict-safe merging"],
   },
   {
-    status: "Next",
+    status: "Ready",
     title: "Desktop app",
     text: "Use prompts in any app with a global shortcut, like a multi-clipboard for prompts.",
     items: ["Electron app", "Global shortcut popup", "Windows, macOS, Linux"],
