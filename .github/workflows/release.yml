@@ -37,17 +37,39 @@ jobs:
           cache: npm
           cache-dependency-path: desktop/package-lock.json
 
-      - name: Set app version from tag
+      - name: Set app version and metadata
         working-directory: desktop
         shell: bash
         env:
           VERSION: ${{ github.ref_name }}
+          REPO_URL: https://github.com/${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
         run: |
           node -e '
             const fs = require("node:fs");
             const file = "package.json";
             const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
             pkg.version = process.env.VERSION.replace(/^v/, "");
+
+            // Metadata required by the Linux .deb target
+            pkg.description = pkg.description || "Save and organize your prompts";
+            pkg.homepage = pkg.homepage || process.env.REPO_URL;
+            if (!pkg.author || typeof pkg.author === "string" || !pkg.author.email) {
+              pkg.author = {
+                name: process.env.OWNER,
+                email: process.env.OWNER + "@users.noreply.github.com"
+              };
+            }
+
+            pkg.build = pkg.build || {};
+            pkg.build.linux = Object.assign(
+              {
+                category: "Utility",
+                maintainer: pkg.author.name + " <" + pkg.author.email + ">"
+              },
+              pkg.build.linux || {}
+            );
+
             fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n");
           '
 
