@@ -20,7 +20,7 @@
     "astro-robots-txt": "^1.0.0",
     "astro-seo": "^1.2.0",
     "astro-seo-schema": "^7.0.1",
-    "schema-dts": "^1.1.5",
+    "schema-dts": "^2.1.0",
     "tailwindcss": "^4.3.3"
   }
 }
