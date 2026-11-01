@@ -28,6 +28,6 @@
     "@wxt-dev/module-react": "^1.1.5",
     "typescript": "^7.0.2",
     "web-ext": "^10.8.0",
-    "wxt": "^0.21.3"
+    "wxt": "^0.21.5"
   }
 }
