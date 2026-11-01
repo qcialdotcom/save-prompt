@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@iconify-json/simple-icons": "^1.2.100",
-    "@lucide/astro": "^1.61.0",
+    "@iconify-json/simple-icons": "^1.2.101",
+    "@lucide/astro": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.4.2",
+    "astro": "^7.4.4",
     "astro-robots-txt": "^1.0.0",
     "astro-seo": "^1.2.0",
     "astro-seo-schema": "^7.0.1",
